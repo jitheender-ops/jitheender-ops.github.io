@@ -8,6 +8,7 @@
 <meta property="og:description" content="I build systems that put hard limits around the parts that can't be trusted to behave — then measure what the limits bought.">
 <meta property="og:type" content="website">
 <title>Jitheender Kumar</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23E3E5E0'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%230B4CE0'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;700&display=swap">
@@ -15,13 +16,10 @@
 <style>
 :root{
   --paper:#E3E5E0;
-  --paper-2:#D7DAD3;
   --ink:#000000;
   --dim:#63685F;
   --rule:#B4B9AE;
   --blue:#0B4CE0;
-  --blue-ink:#0937A8;
-  --hold:#B4402A;
   --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
   --sans:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -51,7 +49,6 @@ a{color:inherit}
 }
 
 .wrap{max-width:1360px;margin:0 auto;padding-inline:var(--gut)}
-.rule{border:0;border-top:1px solid var(--rule);margin:0}
 
 /* ── top bar ───────────────────────────────────────────── */
 .topbar{
@@ -233,7 +230,9 @@ a{color:inherit}
 .fact span{display:block;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#9AA096;margin-top:6px;line-height:1.35}
 
 /* ── toolkit ───────────────────────────────────────────── */
-.kit{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:0;border-top:1px solid var(--ink)}
+.kit{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1px solid var(--ink);border-left:1px solid var(--rule)}
+@media (max-width:1000px){.kit{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.kit{grid-template-columns:minmax(0,1fr)}}
 .kit div{border-bottom:1px solid var(--rule);border-right:1px solid var(--rule);padding:20px clamp(14px,2vw,24px)}
 .kit h4{margin:0 0 10px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);font-weight:700}
 .kit p{margin:0;font-size:14px;line-height:1.58;color:#3A3E37}
@@ -349,7 +348,7 @@ a{color:inherit}
     <div class="gates" id="gates"></div>
 
     <div class="verdict" id="verdict">
-      <span class="idle">Nothing has been submitted yet.</span>
+      <span class="idle">Ready.</span>
     </div>
   </div>
 </section>
@@ -851,9 +850,9 @@ a{color:inherit}
   var clk = document.getElementById("clock");
   function tickClock(){
     try {
-      clk.textContent = new Date().toLocaleTimeString("en-IN", {
+      clk.textContent = (new Date().toLocaleTimeString("en-IN", {
         timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true
-      }) + " IST";
+      }) + " IST").toUpperCase();
     } catch (e) {
       clk.textContent = "IST";
     }
@@ -863,19 +862,43 @@ a{color:inherit}
 
   /* ─── dock active state ───────────────────────────── */
   var links = Array.prototype.slice.call(document.querySelectorAll(".dock a"));
-  var ids = links.map(function(l){ return l.getAttribute("href").slice(1); });
-  var targets = ids.map(function(id){ return document.getElementById(id); }).filter(Boolean);
+  // toolkit and credentials carry on from About, so they light the same lamp
+  var ROUTE = [["top","top"],["gate","gate"],["work","work"],["about","about"],
+               ["toolkit","about"],["credentials","about"],["contact","contact"]];
+  // measured live rather than cached: the gate panel changes height when it runs
+  function mark(){
+    var y = window.pageYOffset + window.innerHeight * 0.35;
+    var cur = "top";
+    ROUTE.forEach(function(r){
+      var el = document.getElementById(r[0]);
+      if (el && el.getBoundingClientRect().top + window.pageYOffset <= y) cur = r[1];
+    });
+    links.forEach(function(l){ l.classList.toggle("here", l.getAttribute("href") === "#" + cur); });
+  }
+  var queued = false;
+  function onScroll(){
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function(){ queued = false; mark(); });
+  }
+  mark();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+  window.addEventListener("load", mark);
 
+  /* ─── the gate demonstrates itself the first time it is seen ─── */
   if ("IntersectionObserver" in window) {
-    var io = new IntersectionObserver(function(entries){
+    var fired = false;
+    var gio = new IntersectionObserver(function(entries){
       entries.forEach(function(e){
-        if (!e.isIntersecting) return;
-        links.forEach(function(l){
-          l.classList.toggle("here", l.getAttribute("href") === "#" + e.target.id);
-        });
+        if (!e.isIntersecting || fired) return;
+        fired = true;
+        gio.disconnect();
+        sel.value = "1";            // open on the one that gets stopped
+        run();
       });
-    }, { rootMargin: "-45% 0px -50% 0px" });
-    targets.forEach(function(t){ io.observe(t); });
+    }, { rootMargin: "0px 0px -35% 0px", threshold: 0 });
+    gio.observe(document.querySelector(".gate"));
   }
 })();
 </script>
