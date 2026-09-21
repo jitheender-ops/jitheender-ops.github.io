@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jitheender | Full-Stack AI Engineer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            color: #f3f4f6;
+        }
+        .font-mono {
+            font-family: 'Space Mono', monospace;
+        }
+        /* Custom Animations */
+        .fade-in-up {
+            animation: fadeInUp 1s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .project-card {
+            transition: all 0.4s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+        }
+        
+        /* Neon Glow effect for AI theme */
+        .glow-text {
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-purple-500 selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full top-0 z-50 bg-[#050505]/80 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="font-mono text-sm tracking-widest uppercase font-bold text-white">Jitheender.Ops</div>
+            <div class="space-x-6 text-sm font-mono text-gray-400 hidden md:block">
+                <a href="#projects" class="hover:text-white transition-colors">/Work</a>
+                <a href="#contact" class="hover:text-white transition-colors">/Contact</a>
+            </div>
+            <a href="https://github.com/jitheender-ops" target="_blank" class="px-4 py-2 border border-white/20 rounded-full text-xs font-mono hover:bg-white hover:text-black transition-all">GitHub ↗</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center pt-20 px-6 relative overflow-hidden">
+        <!-- Abstract gradient background -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-900/20 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+        <div class="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+
+        <div class="max-w-6xl mx-auto w-full">
+            <div class="fade-in-up">
+                <p class="font-mono text-purple-400 mb-6 tracking-widest text-sm uppercase">Full-Stack Engineer & Automation Specialist</p>
+                <h1 class="text-6xl md:text-8xl font-bold tracking-tighter leading-tight mb-8 glow-text">
+                    Building intelligent <br class="hidden md:block" />
+                    systems and <br class="hidden md:block" />
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">autonomous agents.</span>
+                </h1>
+            </div>
+            <div class="fade-in-up delay-200 max-w-2xl">
+                <p class="text-xl text-gray-400 leading-relaxed mb-10">
+                    I design and develop complex operating layers, AI-driven applications, and scalable web platforms. Based in India, working globally.
+                </p>
+                <a href="#projects" class="inline-flex items-center px-8 py-4 bg-white text-black font-semibold rounded-full hover:bg-gray-200 transition-colors">
+                    View My Work
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-32 px-6 border-t border-white/5 bg-[#0a0a0a]">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex justify-between items-end mb-16">
+                <h2 class="font-mono text-xs tracking-widest uppercase text-gray-500">Selected Works (2023-Present)</h2>
+                <span class="text-xs text-gray-600 font-mono">Click cards to view code ↗</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Project 1: Payment Recovery Engine (Highlight) -->
+                <a href="https://github.com/jitheender-ops/payment-recovery-engine" target="_blank" class="block project-card bg-[#111111] border border-white/10 rounded-2xl overflow-hidden group">
+                    <div class="h-64 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000" alt="Payment Engine" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold group-hover:text-yellow-400 transition-colors flex items-center">
+                                Payment Recovery Engine
+                                <svg class="w-5 h-5 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </h3>
+                            <span class="font-mono text-xs px-3 py-1 bg-white/10 rounded-full">Python</span>
+                        </div>
+                        <p class="text-gray-400 leading-relaxed mb-6">
+                            A hardcore, highly robust, fault-tolerant backend system engineered to handle complex transaction failures, ensuring data consistency and revenue retrieval in high-volume environments.
+                        </p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Backend Architecture</span>
+                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">FinTech</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Project 2 -->
+                <a href="https://github.com/jitheender-ops/commerce-os" target="_blank" class="block project-card bg-[#111111] border border-white/10 rounded-2xl overflow-hidden group">
+                    <div class="h-64 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1000" alt="Commerce OS" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold group-hover:text-purple-400 transition-colors flex items-center">
+                                Commerce-OS
+                                <svg class="w-5 h-5 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </h3>
+                            <span class="font-mono text-xs px-3 py-1 bg-white/10 rounded-full">TypeScript</span>
+                        </div>
+                        <p class="text-gray-400 leading-relaxed mb-6">
+                            An operating layer where seven specialized AI agents run an online business under a deterministic governance pipeline. Zero-cost and runs offline.
+                        </p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Multi-Agent Systems</span>
+                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Architecture</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Project 3 -->
+                <a href="https://github.com/jitheender-ops/ai-editing-claud" target="_blank" class="block project-card bg-[#111111] border border-white/10 rounded-2xl overflow-hidden group">
+                    <div class="h-64 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=1000" alt="AI Editing" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold group-hover:text-blue-400 transition-colors flex items-center">
+                                AI-Editing-Claud
+                                <svg class="w-5 h-5 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </h3>
+                            <span class="font-mono text-xs px-3 py-1 bg-white/10 rounded-full">Python</span>
+                        </div>
+                        <p class="text-gray-400 leading-relaxed mb-6">
+                            An AI editing intelligence system that measures a reference video's specific editing style, autonomously applies it to raw footage, and builds timelines.
+                        </p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Machine Learning</span>
+                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">DaVinci Resolve</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Project 4 -->
+                <a href="https://github.com/jitheender-ops/cloud" target="_blank" class="block project-card bg-[#111111] border border-white/10 rounded-2xl overflow-hidden group">
+                    <div class="h-64 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000" alt="Cloud Network" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold group-hover:text-green-400 transition-colors flex items-center">
+                                Cloud Triage AI
+                                <svg class="w-5 h-5 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </h3>
+                            <span class="font-mono text-xs px-3 py-1 bg-white/10 rounded-full">Python</span>
+                        </div>
+                        <p class="text-gray-400 leading-relaxed mb-6">
+                            An OpenEnv-compliant benchmark for AI agents handling real-world support triage. Agents process complex ticket queues by assigning priorities and routing.
+                        </p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">LLM Validation</span>
+                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">OpenAI API</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Project 5 -->
+                <a href="https://github.com/jitheender-ops/whatsapp-emergency-bot" target="_blank" class="block project-card bg-[#111111] border border-white/10 rounded-2xl overflow-hidden group md:col-span-2">
+                    <div class="h-64 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=1600" alt="Bot Code" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold group-hover:text-pink-400 transition-colors flex items-center">
+                                WhatsApp Bot & Automation Suite
+                                <svg class="w-5 h-5 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </h3>
+                            <span class="font-mono text-xs px-3 py-1 bg-white/10 rounded-full">JavaScript</span>
+                        </div>
+                        <p class="text-gray-400 leading-relaxed mb-6 max-w-3xl">
+                            A highly responsive WhatsApp Emergency Bot parsing user intent and providing immediate, automated assistance alongside other security testing tools.
+                        </p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Automation</span>
+                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Bot Frameworks</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / Contact -->
+    <section id="contact" class="py-32 px-6 bg-[#050505]">
+        <div class="max-w-6xl mx-auto text-center">
+            <h2 class="text-4xl md:text-6xl font-bold mb-10 text-white">Let's build something <br />extraordinary.</h2>
+            <a href="https://github.com/jitheender-ops" target="_blank" class="inline-flex items-center px-8 py-4 bg-white text-black font-semibold text-sm hover:bg-gray-200 transition-colors rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                Connect on GitHub ↗
+            </a>
+            <p class="mt-20 text-gray-600 font-mono text-xs">© 2026 Jitheender Kumar. Built for the modern web.</p>
+        </div>
+    </section>
+
+    <!-- Simple Scroll Reveal Script -->
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.project-card').forEach((el, index) => {
+            el.style.opacity = 0;
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease-out';
+            el.style.transitionDelay = `${index * 100}ms`;
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
