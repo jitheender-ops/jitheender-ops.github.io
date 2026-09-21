@@ -1,282 +1,884 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jitheender | Full-Stack AI Engineer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #050505;
-            color: #f3f4f6;
-        }
-        .font-mono {
-            font-family: 'Space Mono', monospace;
-        }
-        /* Custom Animations */
-        .fade-in-up {
-            animation: fadeInUp 1s ease-out forwards;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        .delay-100 { animation-delay: 100ms; }
-        .delay-200 { animation-delay: 200ms; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Manapuram Jitheender Kumar — B.Tech IT student building systems with hard guardrails around the parts that can't be trusted: multi-agent platforms, payment decision engines, on-chain verification.">
+<meta property="og:title" content="Jitheender Kumar">
+<meta property="og:description" content="I build systems that put hard limits around the parts that can't be trusted to behave — then measure what the limits bought.">
+<meta property="og:type" content="website">
+<title>Jitheender Kumar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;700&display=swap">
 
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .project-card {
-            transition: all 0.4s ease;
-        }
-        .project-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
-        }
-        
-        /* Neon Glow effect for AI theme */
-        .glow-text {
-            text-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
-        }
-    </style>
+<style>
+:root{
+  --paper:#E3E5E0;
+  --paper-2:#D7DAD3;
+  --ink:#000000;
+  --dim:#63685F;
+  --rule:#B4B9AE;
+  --blue:#0B4CE0;
+  --blue-ink:#0937A8;
+  --hold:#B4402A;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --sans:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --gut:clamp(16px,4vw,56px);
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    linear-gradient(to right,rgba(0,0,0,.035) 1px,transparent 1px),
+    linear-gradient(to bottom,rgba(0,0,0,.035) 1px,transparent 1px);
+  background-size:56px 56px;
+}
+::selection{background:var(--blue);color:var(--paper)}
+a{color:inherit}
+:focus-visible{outline:2.5px solid var(--blue);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+
+.wrap{max-width:1360px;margin:0 auto;padding-inline:var(--gut)}
+.rule{border:0;border-top:1px solid var(--rule);margin:0}
+
+/* ── top bar ───────────────────────────────────────────── */
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  padding-block:14px;border-bottom:1px solid var(--rule);
+  font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:600;
+}
+.topbar span:last-child{font-family:var(--mono);letter-spacing:0;text-transform:none;font-size:11px;color:var(--dim)}
+
+/* ── hero ──────────────────────────────────────────────── */
+.hero{padding-top:clamp(28px,6vw,72px);padding-bottom:clamp(20px,3vw,32px)}
+.hero h1{
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(3.2rem,15.5vw,13.5rem);
+  line-height:.82;letter-spacing:-.025em;margin:0;
+  text-wrap:balance;
+}
+.hero h1 .given{display:block}
+.hero h1 .family{display:block;font-style:italic;margin-left:.06em}
+.hero h1 .dot{color:var(--blue)}
+
+.hero-top{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end}
+.hero-top h1{position:relative;z-index:1;margin-right:-8%}
+.portrait{
+  position:relative;z-index:2;justify-self:end;align-self:end;
+  width:clamp(210px,29vw,420px);height:auto;
+  margin-bottom:-1.5%;
+  mix-blend-mode:multiply;
+  pointer-events:none;user-select:none;
+}
+
+.thesis{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);
+  gap:clamp(20px,4vw,64px);align-items:end;
+  margin-top:clamp(24px,4vw,44px);
+}
+.thesis p{margin:0;max-width:60ch}
+.thesis .lede{
+  font-family:var(--serif);font-size:clamp(1.3rem,2.6vw,2rem);line-height:1.22;
+}
+.thesis .sub{font-size:15px;color:var(--dim);line-height:1.62;max-width:56ch}
+.thesis .sub strong{color:var(--ink);font-weight:600}
+
+/* ── ticker ────────────────────────────────────────────── */
+.ticker{
+  margin-top:clamp(26px,4vw,48px);
+  border-block:1px solid var(--ink);
+  background:var(--ink);color:var(--paper);
+  overflow:hidden;position:relative;
+}
+.ticker-track{display:flex;width:max-content;animation:slide 46s linear infinite}
+.ticker:hover .ticker-track,.ticker:focus-within .ticker-track{animation-play-state:paused}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker-set{display:flex;align-items:center;flex:none}
+.ticker-set b{
+  font-family:var(--mono);font-size:12px;font-weight:700;
+  padding:11px 22px;white-space:nowrap;display:block;
+}
+.ticker-set b em{font-style:normal;color:#8FB0FF;font-weight:400}
+
+/* ── section heads ─────────────────────────────────────── */
+.sec{padding-block:clamp(48px,7vw,104px)}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:clamp(20px,3vw,36px)}
+.sec-head h2{
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(2.1rem,6vw,4.6rem);line-height:.95;letter-spacing:-.02em;margin:0;
+}
+.sec-head .note{font-size:12px;color:var(--dim);max-width:34ch;text-align:right;line-height:1.5}
+
+/* ── gate ──────────────────────────────────────────────── */
+.gate{background:var(--ink);color:var(--paper);border:1px solid var(--ink)}
+.gate-top{padding:clamp(18px,3vw,30px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center}
+.gate-top h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.4rem,3vw,2.1rem);margin:0;line-height:1.05}
+.gate-top p{margin:6px 0 0;font-size:13px;color:#A9AEA4;max-width:54ch;line-height:1.55}
+
+.gate-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.gate select{
+  font-family:var(--mono);font-size:12px;
+  background:transparent;color:var(--paper);border:1px solid #4A4F47;
+  padding:10px 12px;border-radius:0;max-width:100%;
+}
+.gate select option{background:#111;color:#eee}
+.run{
+  font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--blue);color:#fff;border:1px solid var(--blue);
+  padding:11px 22px;cursor:pointer;border-radius:0;
+  transition:background .15s ease;
+}
+.run:hover{background:#0A3FBB}
+.run[disabled]{opacity:.45;cursor:wait}
+
+.gates{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid #33372F}
+.g{
+  border-right:1px solid #33372F;padding:clamp(14px,2vw,22px);
+  min-height:132px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;
+  opacity:.34;transition:opacity .25s ease,background .25s ease;
+}
+.g:last-child{border-right:0}
+.g.on{opacity:1}
+.g.pass{background:rgba(11,76,224,.16)}
+.g.hold{background:rgba(180,64,42,.2)}
+.g-name{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:#A9AEA4}
+.g-name b{display:block;color:var(--paper);font-size:13px;letter-spacing:.02em;margin-top:3px}
+.g-verdict{font-family:var(--sans);font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.g.pass .g-verdict{color:#8FB0FF}
+.g.hold .g-verdict{color:#FF9C80}
+.g-why{font-family:var(--mono);font-size:10.5px;line-height:1.45;color:#B7BCB2;min-height:2.8em}
+
+.verdict{
+  border-top:1px solid #33372F;padding:clamp(16px,2.4vw,24px);
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-height:74px;
+}
+.stamp{
+  font-family:var(--sans);font-weight:700;font-size:clamp(14px,2.4vw,20px);
+  letter-spacing:.14em;text-transform:uppercase;
+  border:2.5px solid currentColor;padding:7px 16px;
+}
+.stamp.exec{color:#8FB0FF}
+.stamp.park{color:#FF9C80}
+.verdict p{margin:0;font-family:var(--mono);font-size:12px;color:#B7BCB2;line-height:1.5;max-width:62ch}
+.verdict .idle{font-family:var(--mono);font-size:12px;color:#7D8279}
+
+/* ── ledger ────────────────────────────────────────────── */
+.ledger{border-top:1px solid var(--ink)}
+.item{border-bottom:1px solid var(--rule)}
+.item > summary{
+  list-style:none;cursor:pointer;
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;
+  gap:clamp(12px,2.4vw,28px);align-items:center;
+  padding:clamp(16px,2.4vw,26px) clamp(10px,1.6vw,18px);
+  transition:background .16s ease,color .16s ease;
+}
+.item > summary::-webkit-details-marker{display:none}
+.item > summary:hover,.item > summary:focus-visible{background:var(--ink);color:var(--paper)}
+.item > summary:hover .i-stack,.item > summary:focus-visible .i-stack{color:#A9AEA4}
+.item > summary:hover .i-metric,.item > summary:focus-visible .i-metric{color:#8FB0FF}
+.i-idx{font-family:var(--mono);font-size:11px;color:var(--dim)}
+.item > summary:hover .i-idx{color:#A9AEA4}
+.i-name{font-family:var(--serif);font-size:clamp(1.25rem,3.2vw,2.35rem);line-height:1.05;letter-spacing:-.01em}
+.i-stack{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:5px;letter-spacing:.01em}
+.i-right{display:flex;align-items:center;gap:clamp(10px,2vw,22px)}
+.i-metric{
+  font-family:var(--mono);font-size:clamp(12px,1.6vw,15px);font-weight:700;
+  color:var(--blue);text-align:right;line-height:1.25;font-variant-numeric:tabular-nums;
+}
+.i-metric small{display:block;font-weight:400;font-size:10px;color:var(--dim);letter-spacing:.05em;text-transform:uppercase;margin-top:3px}
+.item > summary:hover .i-metric small{color:#A9AEA4}
+.i-open{font-family:var(--mono);font-size:18px;line-height:1;transition:transform .2s ease}
+.item[open] .i-open{transform:rotate(45deg)}
+
+.body{padding:0 clamp(10px,1.6vw,18px) clamp(26px,3.4vw,40px);display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(20px,4vw,56px)}
+.body h4{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 10px;font-weight:600}
+.body ul{margin:0;padding-left:1.05em}
+.body li{margin-bottom:9px;line-height:1.55;font-size:14.5px}
+.body li::marker{color:var(--blue)}
+.constraint{
+  border-left:2.5px solid var(--blue);padding:2px 0 2px 16px;margin:0 0 20px;
+  font-family:var(--serif);font-size:clamp(1.05rem,2vw,1.35rem);line-height:1.34;
+}
+.spec{width:100%;border-collapse:collapse;font-size:13px}
+.spec th,.spec td{text-align:left;padding:8px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.spec th{font-weight:600;color:var(--dim);font-size:11px;letter-spacing:.07em;text-transform:uppercase;width:38%;padding-right:14px}
+.spec td{font-family:var(--mono);font-size:12px;line-height:1.5;font-variant-numeric:tabular-nums}
+.repo{display:inline-block;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--blue);text-decoration:none;border-bottom:1px solid var(--blue);padding-bottom:2px}
+.repo:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ── about ─────────────────────────────────────────────── */
+.about{background:var(--ink);color:var(--paper)}
+.about .wrap{padding-block:clamp(48px,7vw,104px)}
+.about-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:clamp(24px,5vw,72px)}
+.about h2{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,6vw,4.6rem);line-height:.95;margin:0;letter-spacing:-.02em}
+.about p{margin:0 0 18px;font-size:clamp(15px,1.7vw,17px);line-height:1.62;max-width:62ch;color:#D6DACF}
+.about p strong{color:var(--paper);font-weight:600}
+.about p:first-child{font-family:var(--serif);font-size:clamp(1.25rem,2.5vw,1.85rem);line-height:1.3;color:var(--paper)}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:#33372F;border:1px solid #33372F;margin-top:30px}
+@media (min-width:1100px){.facts{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.fact{background:var(--ink);padding:16px 14px}
+.fact b{display:block;font-family:var(--mono);font-size:clamp(17px,2.4vw,23px);font-weight:700;color:#8FB0FF;font-variant-numeric:tabular-nums}
+.fact span{display:block;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#9AA096;margin-top:6px;line-height:1.35}
+
+/* ── toolkit ───────────────────────────────────────────── */
+.kit{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:0;border-top:1px solid var(--ink)}
+.kit div{border-bottom:1px solid var(--rule);border-right:1px solid var(--rule);padding:20px clamp(14px,2vw,24px)}
+.kit h4{margin:0 0 10px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);font-weight:700}
+.kit p{margin:0;font-size:14px;line-height:1.58;color:#3A3E37}
+
+/* ── credentials ───────────────────────────────────────── */
+.creds{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:clamp(20px,3vw,44px)}
+.creds section h4{margin:0 0 12px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:600;border-bottom:1px solid var(--rule);padding-bottom:8px}
+.creds ul{list-style:none;margin:0;padding:0}
+.creds li{font-size:14px;line-height:1.5;padding:7px 0;border-bottom:1px solid rgba(180,185,174,.5)}
+.creds li span{display:block;font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:2px}
+
+/* ── footer ────────────────────────────────────────────── */
+.foot{border-top:1px solid var(--ink);padding-block:clamp(40px,6vw,80px) 120px}
+.foot-mark{
+  font-family:var(--serif);font-weight:400;font-style:italic;
+  font-size:clamp(2.4rem,11vw,9rem);line-height:.9;letter-spacing:-.02em;margin:0 0 clamp(26px,4vw,48px);
+}
+.foot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:clamp(18px,3vw,40px);align-items:start}
+.foot-grid h4{margin:0 0 12px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:600}
+.foot-grid a{display:block;font-family:var(--mono);font-size:13px;padding:6px 0;text-decoration:none;border-bottom:1px solid transparent;width:fit-content;max-width:100%;overflow-wrap:anywhere}
+.foot-grid a:hover{color:var(--blue);border-bottom-color:var(--blue)}
+.clock{font-family:var(--mono);font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums}
+.clock b{color:var(--ink);font-size:clamp(20px,3vw,30px);font-weight:700;display:block;margin-top:4px}
+.colophon{margin-top:clamp(30px,4vw,52px);padding-top:16px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:10.5px;color:var(--dim);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+
+/* ── floating nav ──────────────────────────────────────── */
+.dock{
+  position:fixed;left:50%;transform:translateX(-50%);
+  bottom:0;margin-bottom:max(16px,env(safe-area-inset-bottom,0px));
+  z-index:50;display:flex;gap:2px;
+  background:var(--ink);padding:5px;border:1px solid var(--ink);
+  box-shadow:0 6px 28px rgba(0,0,0,.26);max-width:calc(100vw - 24px);
+}
+.dock a{
+  font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:#A9AEA4;text-decoration:none;padding:8px 13px;white-space:nowrap;
+  transition:background .14s ease,color .14s ease;
+}
+.dock a:hover,.dock a.here{background:var(--paper);color:var(--ink)}
+.dock a.cta{color:#8FB0FF}
+.dock a.cta:hover{background:var(--blue);color:#fff}
+
+@media (max-width:900px){
+  .hero-top{grid-template-columns:minmax(0,1fr)}
+  .hero-top h1{margin-right:0}
+  .portrait{width:min(66%,310px);margin-top:-4%;margin-bottom:0}
+  .thesis,.about-grid,.body{grid-template-columns:minmax(0,1fr)}
+  .sec-head .note{text-align:left}
+  .gates{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g:nth-child(2n){border-right:0}
+  .g:nth-child(-n+2){border-bottom:1px solid #33372F}
+  .gate-top{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:560px){
+  .item > summary{grid-template-columns:auto minmax(0,1fr);row-gap:10px}
+  .i-idx{grid-row:1}
+  .i-right{grid-column:1/-1;justify-content:space-between}
+  .i-metric{text-align:left}
+  .dock a{padding:8px 9px;font-size:10.5px}
+}
+</style>
+
 </head>
-<body class="antialiased selection:bg-purple-500 selection:text-white">
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <span>Manapuram Jitheender Kumar &nbsp;/&nbsp; Visakhapatnam, India</span>
+    <span id="yr">B.Tech IT 2024–2028</span>
+  </div>
+</div>
 
-    <!-- Navigation -->
-    <nav class="fixed w-full top-0 z-50 bg-[#050505]/80 backdrop-blur-md border-b border-white/10">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="font-mono text-sm tracking-widest uppercase font-bold text-white">Jitheender.Ops</div>
-            <div class="space-x-6 text-sm font-mono text-gray-400 hidden md:block">
-                <a href="#projects" class="hover:text-white transition-colors">/Work</a>
-                <a href="#contact" class="hover:text-white transition-colors">/Contact</a>
-            </div>
-            <a href="https://github.com/jitheender-ops" target="_blank" class="px-4 py-2 border border-white/20 rounded-full text-xs font-mono hover:bg-white hover:text-black transition-all">GitHub ↗</a>
-        </div>
-    </nav>
+<!-- ══ HERO ══ -->
+<header class="wrap hero" id="top">
+  <div class="hero-top">
+    <h1>
+      <span class="given">Jitheender</span>
+      <span class="family">Kumar<span class="dot">.</span></span>
+    </h1>
+    <img class="portrait" src="portrait.png" width="980" height="1200"
+         alt="Manapuram Jitheender Kumar, printed as a two-colour halftone.">
+  </div>
 
-    <!-- Hero Section -->
-    <section class="min-h-screen flex items-center justify-center pt-20 px-6 relative overflow-hidden">
-        <!-- Abstract gradient background -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-900/20 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
-        <div class="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+  <div class="thesis">
+    <p class="lede">I build systems that put hard limits around the parts that can’t be trusted to behave — then measure what the limits bought.</p>
+    <p class="sub">Third-year Information Technology student at MVGR College of Engineering. Twenty public repositories: multi-agent platforms where <strong>no agent touches the database</strong>, a payment engine where <strong>no model authorises money</strong>, an editing pipeline where <strong>the model never emits a timestamp</strong>, and a face-match ledger where <strong>the contract recomputes the match itself</strong>. Every claim below is a number I can reproduce.</p>
+  </div>
+</header>
 
-        <div class="max-w-6xl mx-auto w-full">
-            <div class="fade-in-up">
-                <p class="font-mono text-purple-400 mb-6 tracking-widest text-sm uppercase">Full-Stack Engineer & Automation Specialist</p>
-                <h1 class="text-6xl md:text-8xl font-bold tracking-tighter leading-tight mb-8 glow-text">
-                    Building intelligent <br class="hidden md:block" />
-                    systems and <br class="hidden md:block" />
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">autonomous agents.</span>
-                </h1>
-            </div>
-            <div class="fade-in-up delay-200 max-w-2xl">
-                <p class="text-xl text-gray-400 leading-relaxed mb-10">
-                    I design and develop complex operating layers, AI-driven applications, and scalable web platforms. Based in India, working globally.
-                </p>
-                <a href="#projects" class="inline-flex items-center px-8 py-4 bg-white text-black font-semibold rounded-full hover:bg-gray-200 transition-colors">
-                    View My Work
-                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-                </a>
-            </div>
-        </div>
+<div class="ticker" aria-label="Measured results from selected projects">
+  <div class="ticker-track" id="tick"></div>
+</div>
+
+<!-- ══ GATE ══ -->
+<section class="wrap sec" id="gate">
+  <div class="sec-head">
+    <h2>The gate</h2>
+    <p class="note">The governance pipeline from Multi-Agent Commerce OS, running here. Pick an action an agent proposed and send it through.</p>
+  </div>
+
+  <div class="gate">
+    <div class="gate-top">
+      <div>
+        <h3>An agent wants to do something.</h3>
+        <p>Agents never reach the database. They emit a declared tool call, and four checks decide whether it executes or waits for a person. Same inputs, same verdict, every time.</p>
+      </div>
+      <div class="gate-controls">
+        <label for="action" class="sr-only" style="position:absolute;left:-9999px">Proposed action</label>
+        <select id="action"></select>
+        <button class="run" id="run" type="button">Run checks</button>
+      </div>
+    </div>
+
+    <div class="gates" id="gates"></div>
+
+    <div class="verdict" id="verdict">
+      <span class="idle">Nothing has been submitted yet.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WORK ══ -->
+<section class="wrap sec" id="work">
+  <div class="sec-head">
+    <h2>Selected work</h2>
+    <p class="note">Six of twenty repositories. Open a row for the constraint that shaped it.</p>
+  </div>
+  <div class="ledger" id="ledger"></div>
+</section>
+
+<!-- ══ ABOUT ══ -->
+<section class="about" id="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <h2>How I work</h2>
+      <div>
+        <p>The interesting problem in almost everything I build is the same one: something in the system is powerful and unreliable, and my job is to decide exactly what it is allowed to touch.</p>
+        <p>A language model is very good at reading a failed payment and very bad at being trusted with money. So in the recovery engine it picks one of five fixed actions and twelve deterministic rules decide the rest — and I could then prove the whole thing was worth <strong>₹11.71 lakh more per ₹1 crore of failed volume</strong> than the baseline, because the decision boundary was small enough to measure.</p>
+        <p>The same shape keeps showing up. In the video editor the model chooses which clips matter and never touches a frame number, so every cut can explain itself with a rule id. In the face-match ledger the chain doesn’t take my word for the similarity score — it recomputes it. In the RAG benchmark every published number is behind one <code style="font-family:var(--mono);font-size:.88em">make</code> target, because a number nobody can re-derive isn’t a result.</p>
+        <p>I’m in my third year at MVGR in Vizag, writing C++ daily for data structures and algorithms, and building the rest of this in the evenings. I’m looking for internships where correctness is something the team argues about.</p>
+        <div class="facts" id="facts"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TOOLKIT ══ -->
+<section class="wrap sec" id="toolkit">
+  <div class="sec-head">
+    <h2>Toolkit</h2>
+    <p class="note">Grouped by the kind of problem, not by logo count.</p>
+  </div>
+  <div class="kit">
+    <div>
+      <h4>Languages</h4>
+      <p>C++ and C for systems and daily DSA practice. Python for ML, pipelines and tooling. TypeScript and JavaScript for product. SQL. Solidity for on-chain verification.</p>
+    </div>
+    <div>
+      <h4>Product &amp; backend</h4>
+      <p>Next.js and React (App Router, server components, server-sent events). Node.js and Express. FastAPI. SQLite, session and JWT auth, REST APIs designed to be boring.</p>
+    </div>
+    <div>
+      <h4>Machine learning</h4>
+      <p>Multi-agent orchestration with typed tools and constrained JSON. Retrieval with sentence-transformers and FAISS HNSW. XGBoost where it beats the model. TF-IDF and SVM where that is enough.</p>
+    </div>
+    <div>
+      <h4>Security</h4>
+      <p>Threat modelling and written audits. HTTP/HTTPS interception proxies and passive scanning. bcrypt, CSRF, rate limiting, parameterised queries. Phishing detection that runs offline.</p>
+    </div>
+    <div>
+      <h4>Systems</h4>
+      <p>Multithreading and concurrency, TCP and socket programming, FFmpeg media pipelines, content-hash caches and durable job queues.</p>
+    </div>
+    <div>
+      <h4>Shipping</h4>
+      <p>Git and GitHub, GitHub Actions CI, Docker, Vercel and Render, Linux and the command line, Oracle Cloud, Cloudflare.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CREDENTIALS ══ -->
+<section class="wrap sec" id="credentials">
+  <div class="sec-head">
+    <h2>On paper</h2>
+    <p class="note">Certifications and the things that happened away from the keyboard.</p>
+  </div>
+  <div class="creds">
+    <section>
+      <h4>AWS Training &amp; Certification</h4>
+      <ul>
+        <li>Developing Machine Learning Solutions</li>
+        <li>Responsible Artificial Intelligence Practices</li>
+        <li>Exploring AI Use Cases and Applications</li>
+      </ul>
     </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="py-32 px-6 border-t border-white/5 bg-[#0a0a0a]">
-        <div class="max-w-6xl mx-auto">
-            <div class="flex justify-between items-end mb-16">
-                <h2 class="font-mono text-xs tracking-widest uppercase text-gray-500">Selected Works (2023-Present)</h2>
-                <span class="text-xs text-gray-600 font-mono">Click cards to view code ↗</span>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                
-                <!-- Project 1: Payment Recovery Engine (Highlight) -->
-                <a href="https://github.com/jitheender-ops/payment-recovery-engine" target="_blank" class="block project-card bg-[#111111] border border-white/10 rounded-2xl overflow-hidden group">
-                    <div class="h-64 overflow-hidden relative">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10"></div>
-                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000" alt="Payment Engine" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
-                    </div>
-                    <div class="p-8">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-2xl font-bold group-hover:text-yellow-400 transition-colors flex items-center">
-                                Payment Recovery Engine
-                                <svg class="w-5 h-5 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                            </h3>
-                            <span class="font-mono text-xs px-3 py-1 bg-white/10 rounded-full">Python</span>
-                        </div>
-                        <p class="text-gray-400 leading-relaxed mb-6">
-                            A hardcore, highly robust, fault-tolerant backend system engineered to handle complex transaction failures, ensuring data consistency and revenue retrieval in high-volume environments.
-                        </p>
-                        <div class="flex gap-2 flex-wrap">
-                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Backend Architecture</span>
-                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">FinTech</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Project 2 -->
-                <a href="https://github.com/jitheender-ops/commerce-os" target="_blank" class="block project-card bg-[#111111] border border-white/10 rounded-2xl overflow-hidden group">
-                    <div class="h-64 overflow-hidden relative">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10"></div>
-                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1000" alt="Commerce OS" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
-                    </div>
-                    <div class="p-8">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-2xl font-bold group-hover:text-purple-400 transition-colors flex items-center">
-                                Commerce-OS
-                                <svg class="w-5 h-5 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                            </h3>
-                            <span class="font-mono text-xs px-3 py-1 bg-white/10 rounded-full">TypeScript</span>
-                        </div>
-                        <p class="text-gray-400 leading-relaxed mb-6">
-                            An operating layer where seven specialized AI agents run an online business under a deterministic governance pipeline. Zero-cost and runs offline.
-                        </p>
-                        <div class="flex gap-2 flex-wrap">
-                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Multi-Agent Systems</span>
-                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Architecture</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Project 3 -->
-                <a href="https://github.com/jitheender-ops/ai-editing-claud" target="_blank" class="block project-card bg-[#111111] border border-white/10 rounded-2xl overflow-hidden group">
-                    <div class="h-64 overflow-hidden relative">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10"></div>
-                        <img src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=1000" alt="AI Editing" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
-                    </div>
-                    <div class="p-8">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-2xl font-bold group-hover:text-blue-400 transition-colors flex items-center">
-                                AI-Editing-Claud
-                                <svg class="w-5 h-5 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                            </h3>
-                            <span class="font-mono text-xs px-3 py-1 bg-white/10 rounded-full">Python</span>
-                        </div>
-                        <p class="text-gray-400 leading-relaxed mb-6">
-                            An AI editing intelligence system that measures a reference video's specific editing style, autonomously applies it to raw footage, and builds timelines.
-                        </p>
-                        <div class="flex gap-2 flex-wrap">
-                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Machine Learning</span>
-                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">DaVinci Resolve</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Project 4 -->
-                <a href="https://github.com/jitheender-ops/cloud" target="_blank" class="block project-card bg-[#111111] border border-white/10 rounded-2xl overflow-hidden group">
-                    <div class="h-64 overflow-hidden relative">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10"></div>
-                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000" alt="Cloud Network" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
-                    </div>
-                    <div class="p-8">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-2xl font-bold group-hover:text-green-400 transition-colors flex items-center">
-                                Cloud Triage AI
-                                <svg class="w-5 h-5 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                            </h3>
-                            <span class="font-mono text-xs px-3 py-1 bg-white/10 rounded-full">Python</span>
-                        </div>
-                        <p class="text-gray-400 leading-relaxed mb-6">
-                            An OpenEnv-compliant benchmark for AI agents handling real-world support triage. Agents process complex ticket queues by assigning priorities and routing.
-                        </p>
-                        <div class="flex gap-2 flex-wrap">
-                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">LLM Validation</span>
-                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">OpenAI API</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Project 5 -->
-                <a href="https://github.com/jitheender-ops/whatsapp-emergency-bot" target="_blank" class="block project-card bg-[#111111] border border-white/10 rounded-2xl overflow-hidden group">
-                    <div class="h-64 overflow-hidden relative">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10"></div>
-                        <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=1000" alt="Bot Code" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
-                    </div>
-                    <div class="p-8">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-2xl font-bold group-hover:text-pink-400 transition-colors flex items-center">
-                                WhatsApp Bot & Automation
-                                <svg class="w-5 h-5 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                            </h3>
-                            <span class="font-mono text-xs px-3 py-1 bg-white/10 rounded-full">JavaScript</span>
-                        </div>
-                        <p class="text-gray-400 leading-relaxed mb-6">
-                            A highly responsive WhatsApp Emergency Bot parsing user intent and providing immediate, automated assistance alongside other security testing tools.
-                        </p>
-                        <div class="flex gap-2 flex-wrap">
-                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Automation</span>
-                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Bot Frameworks</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Project 6: Hacker House Goa -->
-                <a href="https://github.com/jitheender-ops/hacker-house-goa-builder-passport" target="_blank" class="block project-card bg-[#111111] border border-white/10 rounded-2xl overflow-hidden group">
-                    <div class="h-64 overflow-hidden relative">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-10"></div>
-                        <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=1000" alt="Voice AI" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
-                    </div>
-                    <div class="p-8">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-2xl font-bold group-hover:text-orange-400 transition-colors flex items-center">
-                                Voice RAG & ID Generator
-                                <svg class="w-5 h-5 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                            </h3>
-                            <span class="font-mono text-xs px-3 py-1 bg-white/10 rounded-full">TypeScript</span>
-                        </div>
-                        <p class="text-gray-400 leading-relaxed mb-6">
-                            Engineered the Hacker House Goa Builder Passport system. Features an advanced Voice-Enabled RAG model and an automated, on-the-fly ID Card Generator for event participants.
-                        </p>
-                        <div class="flex gap-2 flex-wrap">
-                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">Voice AI</span>
-                            <span class="text-xs text-gray-500 font-mono border border-white/5 px-2 py-1 rounded">RAG Systems</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
+    <section>
+      <h4>Cisco Networking Academy</h4>
+      <ul>
+        <li>Junior Cybersecurity Analyst<span>Career path</span></li>
+        <li>Cybersecurity Essentials</li>
+        <li>PCAP — Programming Essentials in Python</li>
+        <li>CLA — Programming Essentials in C</li>
+      </ul>
     </section>
-
-    <!-- Footer / Contact -->
-    <section id="contact" class="py-32 px-6 bg-[#050505]">
-        <div class="max-w-6xl mx-auto text-center">
-            <h2 class="text-4xl md:text-6xl font-bold mb-10 text-white">Let's build something <br />extraordinary.</h2>
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                <a href="mailto:mailforjitheender@gmail.com" class="inline-flex items-center px-8 py-4 bg-purple-600 text-white font-semibold text-sm hover:bg-purple-500 transition-colors rounded-full shadow-[0_0_20px_rgba(168,85,247,0.4)]">
-                    Email Me ↗
-                </a>
-                <a href="https://github.com/jitheender-ops" target="_blank" class="inline-flex items-center px-8 py-4 bg-white text-black font-semibold text-sm hover:bg-gray-200 transition-colors rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)]">
-                    Connect on GitHub ↗
-                </a>
-            </div>
-            <p class="mt-20 text-gray-600 font-mono text-xs">© 2026 Jitheender Kumar. Built for the modern web.</p>
-        </div>
+    <section>
+      <h4>Elsewhere</h4>
+      <ul>
+        <li>NASSCOM FutureSkills Prime</li>
+        <li>TechSprint 2026<span>GDG MVGR, with IIC and the Ministry of HRD</span></li>
+        <li>iQOO Hackathon — FinTech &amp; Commerce<span>Submitted AutoRecover</span></li>
+        <li>CTRL.ALT.EXPLORE.GO<span>Tech, travel and AI on YouTube. Freelance editing in Premiere Pro and Resolve</span></li>
+      </ul>
     </section>
+  </div>
+</section>
 
-    <!-- Simple Scroll Reveal Script -->
-    <script>
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = 1;
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, { threshold: 0.1 });
+<!-- ══ FOOT ══ -->
+<footer class="wrap foot" id="contact">
+  <p class="foot-mark">Let’s build something<br>with edges.</p>
+  <div class="foot-grid">
+    <div>
+      <h4>Reach me</h4>
+      <a href="mailto:mailforjitheender@gmail.com">mailforjitheender@gmail.com</a>
+      <a href="tel:+919392411529">+91 93924 11529</a>
+    </div>
+    <div>
+      <h4>Code &amp; profiles</h4>
+      <a href="https://github.com/jitheender-ops" target="_blank" rel="noopener">github.com/jitheender-ops</a>
+      <a href="https://www.linkedin.com/in/jitheender-manapuram-a299a83a8/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://x.com/jitheender23703" target="_blank" rel="noopener">x.com/jitheender23703</a>
+    </div>
+    <div>
+      <h4>Based in</h4>
+      <p class="clock">Visakhapatnam, Andhra Pradesh<b id="clock">—</b></p>
+    </div>
+  </div>
+  <div class="colophon">
+    <span>Instrument Serif &amp; Archivo. Set on a 56px grid.</span>
+    <span>Every figure on this page is reproducible from the repository it names.</span>
+  </div>
+</footer>
 
-        document.querySelectorAll('.project-card').forEach((el, index) => {
-            el.style.opacity = 0;
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'all 0.6s ease-out';
-            el.style.transitionDelay = `${index * 100}ms`;
-            observer.observe(el);
+<nav class="dock" aria-label="Sections">
+  <a href="#top">Top</a>
+  <a href="#gate">Gate</a>
+  <a href="#work">Work</a>
+  <a href="#about">About</a>
+  <a href="#contact" class="cta">Contact</a>
+</nav>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ─── ticker ──────────────────────────────────────── */
+  var FACTS = [
+    ["₹11.71L", "additional net revenue per ₹1Cr of failed payments"],
+    ["1,019", "tests passing in CI on the recovery engine"],
+    ["166", "tests on the editing pipeline, none networked"],
+    ["12", "deterministic guardrail rules before any money moves"],
+    ["8", "specialised agents, zero database access"],
+    ["2,124", "seeded orders the agents reason over"],
+    ["15%", "fewer retry attempts than the fixed baseline"],
+    ["5,000 × 5", "scenarios × seeds behind that number"],
+    ["4", "languages in the retrieval benchmark"],
+    ["20", "public repositories"]
+  ];
+  var tick = document.getElementById("tick");
+  function tset(){
+    var d = document.createElement("div");
+    d.className = "ticker-set";
+    FACTS.forEach(function(f){
+      var b = document.createElement("b");
+      b.appendChild(document.createTextNode(f[0] + " "));
+      var em = document.createElement("em");
+      em.textContent = f[1];
+      b.appendChild(em);
+      d.appendChild(b);
+    });
+    return d;
+  }
+  tick.appendChild(tset());
+  tick.appendChild(tset().cloneNode(true));
+
+  /* ─── facts panel ─────────────────────────────────── */
+  var PANEL = [
+    ["₹11.71L", "Extra revenue per ₹1Cr recovered"],
+    ["1,185", "Tests across two repositories"],
+    ["20", "Public repositories"],
+    ["4", "Languages retrieved across"]
+  ];
+  var fw = document.getElementById("facts");
+  PANEL.forEach(function(p){
+    var d = document.createElement("div");
+    d.className = "fact";
+    var b = document.createElement("b"); b.textContent = p[0];
+    var s = document.createElement("span"); s.textContent = p[1];
+    d.appendChild(b); d.appendChild(s); fw.appendChild(d);
+  });
+
+  /* ─── the gate ────────────────────────────────────── */
+  var GATES = ["Permission", "Policy", "Risk", "Budget"];
+  var ACTIONS = [
+    {
+      label: "Reorder 400 units of SKU-1188 — ₹18,200",
+      agent: "Inventory Agent",
+      checks: [
+        ["PASS", "create_purchase_order is declared for this agent"],
+        ["PASS", "supplier on the approved list, lead time 6d"],
+        ["PASS", "stockout in 4d, confidence 0.91"],
+        ["PASS", "₹18,200 under the ₹25,000 ceiling"]
+      ],
+      out: ["exec", "Executed. Purchase order raised, written to the audit log, and the position re-measured after fulfilment."]
+    },
+    {
+      label: "Drop price 22% on the winter range",
+      agent: "Pricing Agent",
+      checks: [
+        ["PASS", "set_price is declared for this agent"],
+        ["HOLD", "22% exceeds the 15% autonomous discount limit"],
+        ["PASS", "margin stays positive at the proposed price"],
+        ["PASS", "no spend, no budget impact"]
+      ],
+      out: ["park", "Parked for human approval. One check failed, so nothing ran — the agent cannot retry its way past a policy limit."]
+    },
+    {
+      label: "Refund ₹1,499 to a disputed order",
+      agent: "Customer Agent",
+      checks: [
+        ["PASS", "issue_refund is declared for this agent"],
+        ["PASS", "within the 30-day refund window"],
+        ["HOLD", "dispute open — refunding now forfeits the case"],
+        ["PASS", "₹1,499 under the ₹2,000 ceiling"]
+      ],
+      out: ["park", "Parked for human approval. Risk froze it: the money is small, the consequence is not."]
+    },
+    {
+      label: "Email 12,000 customers about the outage",
+      agent: "CEO Agent",
+      checks: [
+        ["HOLD", "send_bulk_email is not declared for any agent"],
+        ["—", "not evaluated — the first gate already stopped it"],
+        ["—", "not evaluated"],
+        ["—", "not evaluated"]
+      ],
+      out: ["park", "Refused at the first gate. An undeclared tool has no path to execution at all, which is the point."]
+    }
+  ];
+
+  var sel = document.getElementById("action");
+  ACTIONS.forEach(function(a, i){
+    var o = document.createElement("option");
+    o.value = String(i);
+    o.textContent = a.agent + "  →  " + a.label;
+    sel.appendChild(o);
+  });
+
+  var gwrap = document.getElementById("gates");
+  var cells = GATES.map(function(name, i){
+    var g = document.createElement("div");
+    g.className = "g";
+    var n = document.createElement("div");
+    n.className = "g-name";
+    n.appendChild(document.createTextNode("Gate " + (i + 1)));
+    var b = document.createElement("b"); b.textContent = name;
+    n.appendChild(b);
+    var v = document.createElement("div"); v.className = "g-verdict"; v.textContent = "—";
+    var w = document.createElement("div"); w.className = "g-why";
+    g.appendChild(n); g.appendChild(v); g.appendChild(w);
+    gwrap.appendChild(g);
+    return { el: g, verdict: v, why: w };
+  });
+
+  var vwrap = document.getElementById("verdict");
+  var runBtn = document.getElementById("run");
+  var timers = [];
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function reset(){
+    timers.forEach(clearTimeout); timers = [];
+    cells.forEach(function(c){
+      c.el.className = "g";
+      c.verdict.textContent = "—";
+      c.why.textContent = "";
+    });
+    vwrap.textContent = "";
+    var s = document.createElement("span");
+    s.className = "idle";
+    s.textContent = "Running…";
+    vwrap.appendChild(s);
+  }
+
+  function settle(a){
+    vwrap.textContent = "";
+    var stamp = document.createElement("span");
+    stamp.className = "stamp " + (a.out[0] === "exec" ? "exec" : "park");
+    stamp.textContent = a.out[0] === "exec" ? "Executed" : "Parked for human";
+    var p = document.createElement("p");
+    p.textContent = a.out[1];
+    vwrap.appendChild(stamp);
+    vwrap.appendChild(p);
+    runBtn.disabled = false;
+  }
+
+  function run(){
+    var a = ACTIONS[Number(sel.value)];
+    reset();
+    runBtn.disabled = true;
+    var step = reduced ? 0 : 420;
+
+    a.checks.forEach(function(chk, i){
+      timers.push(setTimeout(function(){
+        var c = cells[i];
+        var pass = chk[0] === "PASS";
+        var skipped = chk[0] === "—";
+        c.el.className = "g on" + (skipped ? "" : pass ? " pass" : " hold");
+        c.verdict.textContent = skipped ? "Not reached" : (pass ? "Pass" : "Hold");
+        c.why.textContent = chk[1];
+      }, step * i));
+    });
+
+    timers.push(setTimeout(function(){ settle(a); }, step * a.checks.length + (reduced ? 0 : 260)));
+  }
+
+  runBtn.addEventListener("click", run);
+  sel.addEventListener("change", function(){
+    timers.forEach(clearTimeout); timers = [];
+    cells.forEach(function(c){ c.el.className = "g"; c.verdict.textContent = "—"; c.why.textContent = ""; });
+    vwrap.textContent = "";
+    var s = document.createElement("span");
+    s.className = "idle";
+    s.textContent = "Ready. Press run checks.";
+    vwrap.appendChild(s);
+    runBtn.disabled = false;
+  });
+
+  /* ─── ledger ──────────────────────────────────────── */
+  var WORK = [
+    {
+      name: "Multi-Agent Commerce OS",
+      stack: "TypeScript · Next.js · SQLite",
+      metric: "8 agents",
+      metricLabel: "zero db access",
+      constraint: "Agents cannot touch the database. They can only call declared tools, and every call passes permission, policy, risk and budget before anything changes.",
+      points: [
+        "An operating layer for an online business: eight specialised agents observe events, investigate with typed tools, collaborate on findings, and act under a deterministic governance pipeline.",
+        "Low-risk actions execute on their own; anything above the configured limits parks for a human. Every run leaves an audit trail.",
+        "Ask it why sales dropped and five agents run: analytics decomposes revenue into traffic × conversion × AOV, isolates a mobile payment failure rate of 4.5% against 1.6% elsewhere, and the CEO agent ranks the findings. Nothing scripted — computed from 2,124 seeded orders."
+      ],
+      spec: [
+        ["Agents", "8, each with its own tool permissions"],
+        ["Governance", "permission → policy → risk → budget"],
+        ["Seeded data", "2,124 orders, self-seeding on first request"],
+        ["Runs offline", "no API key, no cloud account, no local model"]
+      ],
+      repo: "github.com/jitheender-ops/commerce-os"
+    },
+    {
+      name: "Payment Failure Recovery Engine",
+      stack: "Python · XGBoost · Razorpay",
+      metric: "₹11.71L / ₹1Cr",
+      metricLabel: "vs. fixed retries",
+      constraint: "No language model ever directly authorises money movement. It picks one of five fixed actions; twelve deterministic rules decide whether that action is allowed to run.",
+      points: [
+        "Decides whether, when, and on which rail to retry a failed Indian payment. Hard declines never reach the model at all.",
+        "Measured ₹11.71 lakh additional net revenue per ₹1 crore of failed volume against a fixed three-retry baseline — at 15% fewer attempts and zero false retries, over 5,000 scenarios across 5 seeds. XGBoost beat the LLM agent.",
+        "Sending the link is the easy half. The engine reads the reply too: a promise to pay puts the case to sleep until that date, an instalment plan becomes a chain of promises, a dispute freezes and escalates, and a Hinglish voice call gets a grounded answer or an honest “I don’t know”.",
+        "Where the customer authorises a UPI Autopay mandate the debit collects itself, inside RBI’s e-mandate rules — a 24-hour pre-debit notice enforced by the guardrail, and never offered above the ₹15,000 authentication-exempt ceiling, because an unattended debit is not lawful there."
+      ],
+      spec: [
+        ["Evaluation", "5,000 scenarios × 5 seeds, mean ± σ"],
+        ["Guardrails", "12 rules, all violations reported"],
+        ["Tests", "1,019 passing, CI on 3.11 and 3.13"],
+        ["Compliance", "RBI e-mandate, 24h notice, ₹15,000 ceiling"]
+      ],
+      repo: "github.com/jitheender-ops/payment-recovery-engine"
+    },
+    {
+      name: "ave — editing intelligence",
+      stack: "Python · FFmpeg · DaVinci Resolve",
+      metric: "166 tests",
+      metricLabel: "none networked",
+      constraint: "The model never sees a frame and never emits a timestamp. It gets transcript text and a media index, and returns selections and labels. Every cut point and zoom value is computed by deterministic Python.",
+      points: [
+        "Measures how a reference video is edited into an “Edit DNA”, applies that style to your own footage, and builds the result as a DaVinci Resolve timeline — revisable in plain English, with every version kept.",
+        "Writes FCPXML rather than driving Resolve’s scripting API, after establishing the API cannot add a transition at all: the word never appears in Blackmagic’s scripting documentation. The file format expresses strictly more, works on the free edition, and makes the pipeline a pure function you can unit-test without launching Resolve.",
+        "Cuts are transcript-aware: fillers are excised, no cut lands mid-word, and cuts near a sentence end are pulled onto it. Silence alone kept a fragment of an “um” as its own clip and truncated “dog” mid-word; the transcript fixes both.",
+        "Because nothing is sampled, every edit answers “why is this cut here?” with a rule id and its inputs."
+      ],
+      spec: [
+        ["Build artifact", "FCPXML, with an FCP7 XML fallback"],
+        ["Captions", "ffmpeg + libass, not Fusion"],
+        ["Tests", "166, none networked, none sleeping"],
+        ["Determinism", "LLM returns labels only"]
+      ],
+      repo: "github.com/jitheender-ops/ai-editing-claud"
+    },
+    {
+      name: "Face Verify Chain",
+      stack: "Python · OpenCV · Solidity",
+      metric: "on-chain",
+      metricLabel: "similarity recomputed",
+      constraint: "The chain does not take the match on trust. The contract holds the query embedding and a threshold, recomputes cosine similarity on submission, and reverts below it.",
+      points: [
+        "Face scan → reverse-image search across the web → a tamper-evident record, where the chain itself judges the face match.",
+        "SHA-256 custody hashes chain across the embedding, the raw search response and the match record; the root is anchored as Ethereum transaction calldata, so tampering with the face, the search, or the match all break verification.",
+        "Re-verification never trusts stored hashes — it re-derives the whole chain from raw evidence and checks it against the burn transaction and the contract.",
+        "Closes the oracle gap: nothing on-chain can bind an embedding to a live web post, so a final step re-downloads the post image, re-hashes and re-embeds it, and compares all three values against what the contract stored."
+      ],
+      spec: [
+        ["Detection", "YuNet + SFace, 128-d embedding, ~60ms warm"],
+        ["Search", "Google Lens via Serper, candidates re-embedded"],
+        ["Chain", "burn-tx calldata + FaceVerifier contract"],
+        ["Verified run", "similarity 0.8308, chain valid"]
+      ],
+      repo: "github.com/jitheender-ops/face-chain-verify"
+    },
+    {
+      name: "Mic RAG",
+      stack: "Python · sentence-transformers · FAISS",
+      metric: "1 make target",
+      metricLabel: "per published number",
+      constraint: "A number you can’t re-derive on demand is a number nobody believes. Every reported figure is regenerated by a single make target.",
+      points: [
+        "Multilingual retrieval over ai4bharat’s MS MARCO-XI in Hindi, Tamil, Bengali and English — chosen because its relevance labels are human, so the benchmark isn’t scoring a generator against itself.",
+        "Measured chunking strategies, calibrated score floors on held-out sets, and benchmarked exact search against FAISS HNSW to find where recall stops paying for latency.",
+        "Runs with no downloads at all on a stdlib bag-of-words fallback — same signatures, worse numbers, and every report header stamps which embedder produced its figures."
+      ],
+      spec: [
+        ["Corpus", "ai4bharat/MSMARCO-XI, streamed, human labels"],
+        ["Embedder", "multilingual-e5-small, 384-d, 512 tokens"],
+        ["Languages", "Hindi, Tamil, Bengali, English"],
+        ["Offline mode", "stdlib hashed backend, zero downloads"]
+      ],
+      repo: "github.com/jitheender-ops/rag-model"
+    },
+    {
+      name: "Hacker House Goa — Builder Passport",
+      stack: "Next.js 16 · React 19 · Vercel",
+      metric: "shipped",
+      metricLabel: "live on vercel",
+      constraint: "A hackathon build, which is its own constraint: the deploy has to work before the deadline, on a machine that isn’t yours.",
+      points: [
+        "Full-stack web app generating shareable digital “builder passport” ID cards for event attendees, with dynamic Open Graph images through next/og and Satori.",
+        "Traced a font-loading failure to Git LFS serving pointer files instead of the real font binaries — a bug that looks like a Satori problem and isn’t.",
+        "Resolved pnpm lockfile mismatches between local and Vercel build environments to unblock CI/CD, and built high-resolution PNG export with html-to-image, pausing CSS animation and handling glassmorphism during capture."
+      ],
+      spec: [
+        ["Framework", "Next.js 16, React 19, App Router"],
+        ["OG images", "next/og (Satori), generated per card"],
+        ["Export", "html-to-image, high-resolution PNG"],
+        ["Deploy", "Vercel, live"]
+      ],
+      repo: "github.com/jitheender-ops/hacker-house-goa-builder-passport"
+    }
+  ];
+
+  var led = document.getElementById("ledger");
+
+  WORK.forEach(function(w, i){
+    var d = document.createElement("details");
+    d.className = "item";
+
+    var s = document.createElement("summary");
+
+    var idx = document.createElement("span");
+    idx.className = "i-idx";
+    idx.textContent = (i + 1 < 10 ? "0" : "") + (i + 1);
+
+    var mid = document.createElement("div");
+    var nm = document.createElement("div"); nm.className = "i-name"; nm.textContent = w.name;
+    var st = document.createElement("div"); st.className = "i-stack"; st.textContent = w.stack;
+    mid.appendChild(nm); mid.appendChild(st);
+
+    var right = document.createElement("div"); right.className = "i-right";
+    var mt = document.createElement("div"); mt.className = "i-metric";
+    mt.appendChild(document.createTextNode(w.metric));
+    var sm = document.createElement("small"); sm.textContent = w.metricLabel;
+    mt.appendChild(sm);
+    var op = document.createElement("span"); op.className = "i-open"; op.setAttribute("aria-hidden", "true"); op.textContent = "+";
+    right.appendChild(mt); right.appendChild(op);
+
+    s.appendChild(idx); s.appendChild(mid); s.appendChild(right);
+    d.appendChild(s);
+
+    var body = document.createElement("div"); body.className = "body";
+
+    var left = document.createElement("div");
+    var con = document.createElement("p"); con.className = "constraint"; con.textContent = w.constraint;
+    var h4a = document.createElement("h4"); h4a.textContent = "What it does";
+    var ul = document.createElement("ul");
+    w.points.forEach(function(p){ var li = document.createElement("li"); li.textContent = p; ul.appendChild(li); });
+    left.appendChild(con); left.appendChild(h4a); left.appendChild(ul);
+
+    var rightCol = document.createElement("div");
+    var h4b = document.createElement("h4"); h4b.textContent = "Specification";
+    var tb = document.createElement("table"); tb.className = "spec";
+    var tbody = document.createElement("tbody");
+    w.spec.forEach(function(row){
+      var tr = document.createElement("tr");
+      var th = document.createElement("th"); th.scope = "row"; th.textContent = row[0];
+      var td = document.createElement("td"); td.textContent = row[1];
+      tr.appendChild(th); tr.appendChild(td); tbody.appendChild(tr);
+    });
+    tb.appendChild(tbody);
+    var a = document.createElement("a");
+    a.className = "repo"; a.href = "https://" + w.repo; a.target = "_blank"; a.rel = "noopener";
+    a.textContent = w.repo;
+    rightCol.appendChild(h4b); rightCol.appendChild(tb); rightCol.appendChild(a);
+
+    body.appendChild(left); body.appendChild(rightCol);
+    d.appendChild(body);
+    led.appendChild(d);
+  });
+
+  /* ─── clock (IST) ─────────────────────────────────── */
+  var clk = document.getElementById("clock");
+  function tickClock(){
+    try {
+      clk.textContent = new Date().toLocaleTimeString("en-IN", {
+        timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true
+      }) + " IST";
+    } catch (e) {
+      clk.textContent = "IST";
+    }
+  }
+  tickClock();
+  setInterval(tickClock, 20000);
+
+  /* ─── dock active state ───────────────────────────── */
+  var links = Array.prototype.slice.call(document.querySelectorAll(".dock a"));
+  var ids = links.map(function(l){ return l.getAttribute("href").slice(1); });
+  var targets = ids.map(function(id){ return document.getElementById(id); }).filter(Boolean);
+
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (!e.isIntersecting) return;
+        links.forEach(function(l){
+          l.classList.toggle("here", l.getAttribute("href") === "#" + e.target.id);
         });
-    </script>
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    targets.forEach(function(t){ io.observe(t); });
+  }
+})();
+</script>
 </body>
 </html>
