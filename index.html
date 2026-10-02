@@ -171,6 +171,11 @@ a{color:inherit}
 .verdict p{margin:0;font-family:var(--mono);font-size:12px;color:#B7BCB2;line-height:1.5;max-width:62ch}
 .verdict .idle{font-family:var(--mono);font-size:12px;color:#7D8279}
 
+/* the same gate as a scene: the call travels, the planes decide */
+.stage{position:relative;height:clamp(212px,26vw,332px);border-top:1px solid #33372F;overflow:hidden}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+@media (max-width:700px){.stage{display:none}}
+
 /* ── ledger ────────────────────────────────────────────── */
 .ledger{border-top:1px solid var(--ink)}
 .item{border-bottom:1px solid var(--rule)}
@@ -216,11 +221,54 @@ a{color:inherit}
 .body h4{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 10px;font-weight:600}
 .body ul{margin:0;padding-left:1.05em}
 .body li{margin-bottom:9px;line-height:1.55;font-size:14.5px}
-.body li::marker{color:var(--blue)}
-.constraint{
-  border-left:2.5px solid var(--blue);padding:2px 0 2px 16px;margin:0 0 20px;
-  font-family:var(--serif);font-size:clamp(1.05rem,2vw,1.35rem);line-height:1.34;
-}
+.body li::marker{color:var(--blue)}  .constraint{
+    border-left:2.5px solid var(--blue);padding:2px 0 2px 16px;margin:0 0 20px;
+    font-family:var(--serif);font-size:clamp(1.05rem,2vw,1.35rem);line-height:1.34;
+  }
+
+  /* every project opens onto its own exploded stack: what proposes, what
+     decides, what changes. Axonometric rather than perspective, because the
+     page is a drafting sheet and because it keeps the guide line exact. */
+  .stack{grid-column:1/-1;margin-bottom:clamp(10px,1.4vw,18px);padding:clamp(8px,1vw,12px) 0 clamp(14px,2vw,22px);border-bottom:1px solid var(--rule)}
+  /* the height contains the rotated plates, which paint well past their own box */
+  .stack-view{position:relative;height:clamp(316px,27vw,330px);--gap:74px}
+  .stack-stage{
+    position:absolute;inset:0;transform-style:preserve-3d;
+    transform:rotateX(38deg) rotateZ(calc(-18deg + var(--turn,0deg)));
+    transition:transform .18s ease-out;
+  }
+  .slab{
+    position:absolute;left:50%;top:50%;width:min(74%,442px);padding:9px 13px 10px;
+    background:var(--paper);border:1px solid var(--ink);
+    transform:translate(-50%,-50%) translateZ(calc(var(--gap) * 1.624 * var(--k,0)));
+  }
+  .slab:nth-child(1){--k:1}
+  .slab:nth-child(2){--k:0}
+  .slab:nth-child(3){--k:-1}
+  .slab em{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-style:normal;color:var(--dim)}
+  .slab b{display:block;font-size:14px;line-height:1.22;margin-top:2px;font-weight:600}
+  .slab span{display:block;font-family:var(--mono);font-size:10.5px;line-height:1.4;color:var(--dim);margin-top:3px}
+  .slab:nth-child(2){
+    border-color:var(--blue);border-width:1.5px;
+    background-image:repeating-linear-gradient(45deg,rgba(11,76,224,.13) 0 3px,transparent 3px 7px);
+  }
+  .slab:nth-child(2) em,.slab:nth-child(2) span{color:var(--blue)}
+  .slab:nth-child(2) b{color:var(--blue)}
+  .spine{position:absolute;left:50%;width:1px}
+  .spine.a{top:calc(50% - var(--gap));height:var(--gap);background:var(--blue);opacity:.85}
+  .spine.b{top:50%;height:var(--gap);border-left:1px dashed var(--rule)}
+  details[open] .slab{animation:fan .5s cubic-bezier(.2,.7,.25,1) both}
+  @keyframes fan{
+    from{transform:translate(-50%,-50%) translateZ(0)}
+    to{transform:translate(-50%,-50%) translateZ(calc(var(--gap) * 1.624 * var(--k,0)))}
+  }
+  @media (max-width:620px){
+    .stack-view{--gap:66px;height:306px}
+    .slab{width:min(88%,442px);padding:8px 11px 9px}
+    .slab b{font-size:13px}
+    /* the x angle stays put: the guide line is computed from it */
+    .stack-stage{transform:rotateX(38deg) rotateZ(calc(-12deg + var(--turn,0deg)))}
+  }
 .spec{width:100%;border-collapse:collapse;font-size:13px}
 .spec th,.spec td{text-align:left;padding:8px 0;border-bottom:1px solid var(--rule);vertical-align:top}
 .spec th{font-weight:600;color:var(--dim);font-size:11px;letter-spacing:.07em;text-transform:uppercase;width:38%;padding-right:14px}
@@ -357,6 +405,8 @@ a{color:inherit}
         <button class="run" id="run" type="button">Run checks</button>
       </div>
     </div>
+
+    <div class="stage" id="stage" aria-hidden="true"><canvas id="gate3d"></canvas></div>
 
     <div class="gates" id="gates"></div>
 
@@ -628,6 +678,308 @@ a{color:inherit}
   var timers = [];
   var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* ── the same gate, in depth ──────────────────────────────────────────
+     Hand-rolled perspective on a 2D canvas, so the page stays one file
+     with no dependency. The packet is driven by the verdicts that fill
+     the four columns below: it cannot cross a plane whose check has not
+     come back, so the drawing can never disagree with the log. */
+  var gate3d = (function(){
+    var cvs = document.getElementById("gate3d");
+    var band = document.getElementById("stage");
+    function bail(){ if (band) band.style.display = "none"; return null; }
+    if (!cvs || !cvs.getContext) return bail();
+    var ctx = cvs.getContext("2d");
+    if (!ctx) return bail();
+    /* the stage is hidden under 700px by css, so "live" is measured, not assumed */
+
+    var LIVE = !reduced;                 // motion off renders a single honest frame
+    var W = 1, H = 1, DPR = 1, F = 800;  // F is the focal length in css pixels
+
+    /* world units: X is the path of the call, Y is up, Z is depth */
+    var PX = [-6, -2, 2, 6], BOX = 1.5;
+    var AGENT_X = -9.6, DB_X = 9.6, FLOOR = -1.5, RAIL = 0.15;
+    var CAM = { yaw: -0.42, pitch: 0.30, dist: 15.5, tx: -1.2, ty: 0.1 };
+
+    var par = { x: 0, y: 0, tx: 0, ty: 0 };
+    var S = {
+      t: 3, x: AGENT_X, tx: AGENT_X, lift: 0,
+      cage: 0, cageOn: false, store: 0, storeOn: false, trail: [],
+      g: [{ v: null, t: 0 }, { v: null, t: 0 }, { v: null, t: 0 }, { v: null, t: 0 }]
+    };
+    var running = false, raf = 0, last = 0, onScreen = false;
+
+    /* ── camera ── */
+    function unit(v){ var l = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]) || 1; return [v[0]/l, v[1]/l, v[2]/l]; }
+    function cross(a, b){ return [a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2], a[0]*b[1] - a[1]*b[0]]; }
+
+    function view(){
+      var yaw = CAM.yaw + par.x + (LIVE ? Math.sin(S.t * 0.17) * 0.05 : 0);
+      var pit = CAM.pitch + par.y, cp = Math.cos(pit);
+      var c = [CAM.tx + CAM.dist * cp * Math.sin(yaw), CAM.ty + CAM.dist * Math.sin(pit), CAM.dist * cp * Math.cos(yaw)];
+      var f = unit([CAM.tx - c[0], CAM.ty - c[1], -c[2]]);
+      var r = unit(cross(f, [0, 1, 0]));
+      return { c: c, f: f, r: r, u: cross(r, f) };
+    }
+    function pr(v, cam){
+      var d = [v[0] - cam.c[0], v[1] - cam.c[1], v[2] - cam.c[2]];
+      var z = d[0]*cam.f[0] + d[1]*cam.f[1] + d[2]*cam.f[2];
+      if (z < 0.9) return null;
+      var x = d[0]*cam.r[0] + d[1]*cam.r[1] + d[2]*cam.r[2];
+      var y = d[0]*cam.u[0] + d[1]*cam.u[1] + d[2]*cam.u[2];
+      return { x: W*0.5 + F*x/z, y: H*0.5 - F*y/z, k: F/z, z: z };
+    }
+    function depth(v, cam){ var p = pr(v, cam); return p ? p.z : 1e6; }
+
+    /* ── primitives ── */
+    function line(a, b, col, w, cam, al){
+      var p = pr(a, cam), q = pr(b, cam);
+      if (!p || !q) return;
+      ctx.strokeStyle = col; ctx.lineWidth = w; ctx.globalAlpha = (al == null ? 1 : al);
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+    function ring(x, y, z, r, plane, col, cam, al, w){
+      var i, a, ca, sa, p, started = false;
+      ctx.strokeStyle = col; ctx.lineWidth = w || 1; ctx.globalAlpha = (al == null ? 1 : al);
+      ctx.beginPath();
+      for (i = 0; i <= 32; i++){
+        a = i/32 * Math.PI*2; ca = Math.cos(a)*r; sa = Math.sin(a)*r;
+        p = pr(plane === 0 ? [x+ca, y+sa, z] : plane === 1 ? [x, y+ca, z+sa] : [x+ca, y, z+sa], cam);
+        if (!p){ started = false; continue; }
+        if (!started){ ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+      }
+      ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    function text(str, at, col, cam, al, align){
+      var p = pr(at, cam); if (!p) return;
+      var size = Math.max(8, Math.min(12, 10 * (p.k / (F / CAM.dist))));
+      ctx.font = "700 " + size.toFixed(1) + "px 'JetBrains Mono', ui-monospace, monospace";
+      try { ctx.letterSpacing = "0.09em"; } catch(e){}
+      ctx.fillStyle = col; ctx.globalAlpha = (al == null ? 1 : al);
+      ctx.textAlign = align || "center";
+      ctx.fillText(str, p.x, p.y);
+      ctx.textAlign = "left"; ctx.globalAlpha = 1;
+    }
+
+    /* ── props ── */
+    function drawGate(i, cam){
+      var g = S.g[i], x = PX[i], col = "#4A4F47", al = 0.5, w = 1, pulse = g.t;
+      if (g.v === "PASS"){ col = "#8FB0FF"; al = 0.75; }
+      else if (g.v === "HOLD"){ col = "#FF9C80"; al = 0.8; }
+      else if (g.v === "SKIP"){ col = "#4A4F47"; al = 0.16; pulse = 0; }
+      else if (Math.abs(S.x - (x - 0.42)) < 0.9 && LIVE) al += Math.sin(S.t * 9) * 0.16;
+      al = Math.min(1, Math.max(0.06, al + pulse * 0.5));
+      w += pulse * 1.8;
+      var c = [[x,-BOX,-BOX],[x,BOX,-BOX],[x,BOX,BOX],[x,-BOX,BOX]];
+      line(c[0], c[1], col, w, cam, al); line(c[1], c[2], col, w, cam, al);
+      line(c[2], c[3], col, w, cam, al); line(c[3], c[0], col, w, cam, al);
+      var s = BOX*0.66, d = [[x,-s,-s],[x,s,-s],[x,s,s],[x,-s,s]];
+      line(d[0], d[1], col, 1, cam, al*0.3); line(d[1], d[2], col, 1, cam, al*0.3);
+      line(d[2], d[3], col, 1, cam, al*0.3); line(d[3], d[0], col, 1, cam, al*0.3);
+      text(GATES[i].toUpperCase(), [x, BOX + 0.6, 0],
+           g.v === "HOLD" ? "#FF9C80" : g.v === "PASS" ? "#8FB0FF" : "#7D8279",
+           cam, Math.min(1, 0.5 + pulse * 0.5));
+    }
+    function drawAgent(cam){
+      var x = AGENT_X, hw = 0.85, y0 = FLOOR, y1 = 1.45, z0 = -0.75, z1 = 0.75;
+      var v = [[x-hw,y0,z0],[x-hw,y1,z0],[x-hw,y1,z1],[x-hw,y0,z1],
+               [x+hw,y0,z0],[x+hw,y1,z0],[x+hw,y1,z1],[x+hw,y0,z1]];
+      var E = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+      for (var i = 0; i < E.length; i++) line(v[E[i][0]], v[E[i][1]], "#4A4F47", 1, cam, 0.5);
+      line([x, y1*0.5, z0], [x, y1*0.5, z1], "#4A4F47", 1, cam, 0.28);
+      text("AGENT", [x, y1 + 0.55, 0], "#7D8279", cam, 0.9);
+    }
+    function drawDB(cam){
+      var r = 1.0, y0 = FLOOR, y1 = 1.55, i, a = Math.PI*2/28, an;
+      for (i = 0; i < 28; i++){
+        an = i * a;
+        line([DB_X + Math.cos(an)*r, y0, Math.sin(an)*r], [DB_X + Math.cos(an+a)*r, y0, Math.sin(an+a)*r], "#4A4F47", 1, cam, 0.5);
+        line([DB_X + Math.cos(an)*r, y1, Math.sin(an)*r], [DB_X + Math.cos(an+a)*r, y1, Math.sin(an+a)*r], "#4A4F47", 1, cam, 0.75);
+      }
+      for (i = 0; i < 4; i++){
+        an = i * Math.PI/2;
+        line([DB_X + Math.cos(an)*r, y0, Math.sin(an)*r], [DB_X + Math.cos(an)*r, y1, Math.sin(an)*r], "#4A4F47", 1, cam, 0.45);
+      }
+      if (S.store > 0.02) ring(DB_X, y1, 0, r + (1 - S.store) * 2.4, 2, "#8FB0FF", cam, 0.75 * S.store, 1);
+      text("LEDGER", [DB_X, y1 + 0.62, 0], S.store > 0.3 ? "#8FB0FF" : "#7D8279", cam, 0.9);
+    }
+    function drawCage(cam){
+      var y = RAIL + S.lift, r = 1.15, al = S.cage;
+      ring(S.x, y, 0, r, 0, "#FF9C80", cam, 0.5 * al, 1);
+      ring(S.x, y, 0, r, 1, "#FF9C80", cam, 0.4 * al, 1);
+      ring(S.x, y, 0, r, 2, "#FF9C80", cam, 0.4 * al, 1);
+      ring(S.x, FLOOR + 0.02, 0, r * 0.8, 2, "#FF9C80", cam, 0.2 * al, 1);
+      text("→ PERSON", [S.x + 1.5, y + 0.7, 0], "#FF9C80", cam, 0.95 * al, "left");
+    }
+    function drawTrail(cam){
+      var n = S.trail.length, col = S.cage > 0.35 ? "#FF9C80" : "#8FB0FF";
+      for (var i = 1; i < n; i++) line(S.trail[i-1], S.trail[i], col, 1.4, cam, 0.04 + (i/n) * 0.2);
+    }
+    function drawPacket(cam){
+      var y = RAIL + S.lift, held = S.cage > 0.35;
+      var col = held ? "#FF9C80" : (S.store > 0.3 ? "#8FB0FF" : "#FFFFFF");
+      var p = pr([S.x, y, 0], cam); if (!p) return;
+      var side = Math.max(5, Math.min(9, 6.5 * (p.k / (F / CAM.dist)))), i;
+      ctx.fillStyle = col;
+      ctx.globalAlpha = 0.09; ctx.beginPath(); ctx.arc(p.x, p.y, side * 2.6, 0, Math.PI*2); ctx.fill();
+      ctx.globalAlpha = 0.16; ctx.beginPath(); ctx.arc(p.x, p.y, side * 1.6, 0, Math.PI*2); ctx.fill();
+      ctx.globalAlpha = 1; ctx.fillRect(p.x - side/2, p.y - side/2, side, side);
+      var e = 0.3, vtx = [];
+      for (var ix = -1; ix <= 1; ix += 2) for (var iy = -1; iy <= 1; iy += 2) for (var iz = -1; iz <= 1; iz += 2)
+        vtx.push([S.x + ix*e, y + iy*e, iz*e]);
+      var E = [[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]];
+      for (i = 0; i < E.length; i++) line(vtx[E[i][0]], vtx[E[i][1]], col, 1, cam, 0.28);
+    }
+
+    /* ── frame ── */
+    function snap(){
+      S.x = S.tx; S.lift = S.cageOn ? 0.25 : 0; S.trail = [];
+      S.cage = S.cageOn ? 1 : 0; S.store = S.storeOn ? 1 : 0;
+    }
+    function draw(){
+      if (W < 10 || H < 10) return;
+      if (!LIVE) snap();
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      var cam = view(), i, a, plane;
+
+      for (i = -12; i <= 12; i += 2){
+        a = 0.09 + 0.1 * (1 - Math.abs(i) / 16);
+        line([i, FLOOR, -7], [i, FLOOR, 7], "#4A4F47", 1, cam, a);
+      }
+      for (i = -6; i <= 6; i += 2){
+        a = 0.09 + 0.1 * (1 - Math.abs(i) / 9);
+        line([-13, FLOOR, i], [13, FLOOR, i], "#4A4F47", 1, cam, a);
+      }
+
+      /* what the call has already crossed reads solid, the rest is still a plan */
+      line([AGENT_X, RAIL, 0], [Math.max(AGENT_X, S.x), RAIL, 0], "#7D8279", 1, cam, 0.5);
+      line([Math.max(AGENT_X, S.x), RAIL, 0], [DB_X, RAIL, 0], "#4A4F47", 1, cam, 0.26);
+
+      plane = [{ z: depth([AGENT_X, 0, 0], cam), f: function(){ drawAgent(cam); } },
+               { z: depth([DB_X, 0, 0], cam), f: function(){ drawDB(cam); } }];
+      PX.forEach(function(px, idx){ plane.push({ z: depth([px, 0, 0], cam), f: function(){ drawGate(idx, cam); } }); });
+      plane.sort(function(p, q){ return q.z - p.z; });
+      plane.forEach(function(p){ p.f(); });
+
+      drawTrail(cam);
+      if (S.cage > 0.02) drawCage(cam);
+      drawPacket(cam);
+    }
+
+    /* ── motion ── */
+    function step(dt){
+      S.t += dt;
+      var ease = 1 - Math.exp(-8 * dt);
+      S.x += (S.tx - S.x) * ease;
+      S.lift += ((S.cageOn ? 0.25 : 0) - S.lift) * (1 - Math.exp(-4 * dt));
+      S.cage += ((S.cageOn ? 1 : 0) - S.cage) * (1 - Math.exp(-5 * dt));
+      S.store += ((S.storeOn ? 1 : 0) - S.store) * (1 - Math.exp(-5 * dt));
+      for (var i = 0; i < S.g.length; i++) if (S.g[i].t > 0) S.g[i].t = Math.max(0, S.g[i].t - dt / 0.9);
+      par.x += (par.tx - par.x) * (1 - Math.exp(-3 * dt));
+      par.y += (par.ty - par.y) * (1 - Math.exp(-3 * dt));
+      S.trail.push([S.x, RAIL + S.lift + Math.sin(S.t * 2.1) * 0.05, 0]);
+      if (S.trail.length > 26) S.trail.shift();
+    }
+    function settled(){
+      if (Math.abs(S.tx - S.x) > 0.002) return false;
+      if (Math.abs(par.tx - par.x) > 0.0015 || Math.abs(par.ty - par.y) > 0.0015) return false;
+      if (Math.abs((S.cageOn ? 1 : 0) - S.cage) > 0.004) return false;
+      if (Math.abs((S.storeOn ? 1 : 0) - S.store) > 0.004) return false;
+      if (Math.abs((S.cageOn ? 0.25 : 0) - S.lift) > 0.004) return false;
+      for (var i = 0; i < S.g.length; i++) if (S.g[i].t > 0.01) return false;
+      return true;
+    }
+    function loop(ts){
+      raf = 0;
+      if (!running) return;
+      var dt = last ? Math.min(0.05, (ts - last) / 1000) : 0.016;
+      last = ts;
+      step(dt); draw();
+      if (settled()) stop();
+      else if (running) raf = requestAnimationFrame(loop);
+    }
+    function start(){
+      if (!LIVE || running || W < 10) return;
+      running = true; last = 0;
+      raf = requestAnimationFrame(loop);
+    }
+    function stop(){ running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
+    function paint(){ if (!running){ if (!LIVE) snap(); draw(); } }
+    function sync(){
+      if (!LIVE) return;
+      if (onScreen && document.visibilityState !== "hidden") start();
+      else stop();
+    }
+
+    /* ── wiring ── */
+    function resize(){
+      var r = cvs.getBoundingClientRect();
+      if (r.width < 10 || r.height < 10){ W = 0; H = 0; stop(); return; }
+      W = Math.round(r.width); H = Math.round(r.height);
+      DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+      F = Math.max(W * 0.58, H * 1.45);
+      if (cvs.width !== Math.round(W * DPR) || cvs.height !== Math.round(H * DPR)){
+        cvs.width = Math.round(W * DPR); cvs.height = Math.round(H * DPR);
+      }
+      paint();
+    }
+    resize();
+    if (window.ResizeObserver){ try { new ResizeObserver(resize).observe(cvs.parentNode); } catch(e){} }
+    window.addEventListener("resize", resize);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ paint(); });
+
+    var stageEl = band;
+    if (stageEl){
+      stageEl.addEventListener("pointermove", function(e){
+        if (!LIVE) return;
+        var r = cvs.getBoundingClientRect();
+        par.tx = ((e.clientX - r.left) / r.width - 0.5) * 0.17;
+        par.ty = ((e.clientY - r.top) / r.height - 0.5) * -0.11;
+        sync();
+      });
+      stageEl.addEventListener("pointerleave", function(){ par.tx = 0; par.ty = 0; });
+    }
+    if ("IntersectionObserver" in window){
+      new IntersectionObserver(function(es){
+        if (!es.length) return;
+        onScreen = es[0].isIntersecting;
+        sync();
+      }, { threshold: 0 }).observe(document.querySelector(".gate"));
+    } else onScreen = true;
+    document.addEventListener("visibilitychange", sync);
+
+    return {
+      begin: function(){
+        S.x = AGENT_X; S.tx = PX[0]; S.trail = []; S.t = 3;
+        S.lift = 0; S.cage = 0; S.store = 0; S.cageOn = false; S.storeOn = false;
+        S.g.forEach(function(g){ g.v = null; g.t = 0; });
+        paint(); sync();
+      },
+      hit: function(i, v){
+        var g = S.g[i]; if (!g) return;
+        g.v = v; g.t = v === "SKIP" ? 0 : 1;
+        /* every check is still evaluated and reported after a hold, but a
+           parked call never moves again — the planes light, the packet stops */
+        if (v === "PASS" && !S.cageOn) S.tx = i < PX.length - 1 ? PX[i + 1] : DB_X;
+        else if (v === "HOLD"){ S.tx = PX[i] - 0.42; S.cageOn = true; }
+        paint(); sync();
+      },
+      reset: function(){
+        S.x = AGENT_X; S.tx = AGENT_X; S.trail = []; S.lift = 0; S.cage = 0; S.store = 0;
+        S.cageOn = false; S.storeOn = false;
+        S.g.forEach(function(g){ g.v = null; g.t = 0; });
+        paint();
+      },
+      settle: function(out){
+        if (out === "exec"){ S.storeOn = true; S.tx = DB_X; } else S.cageOn = true;
+        paint(); sync();
+      }
+    };
+  })();
+  var gate3dNoop = { begin: function(){}, hit: function(){}, reset: function(){}, settle: function(){} };
+  var g3 = gate3d || gate3dNoop;
+
   function reset(){
     timers.forEach(clearTimeout); timers = [];
     cells.forEach(function(c){
@@ -651,12 +1003,14 @@ a{color:inherit}
     p.textContent = a.out[1];
     vwrap.appendChild(stamp);
     vwrap.appendChild(p);
+    g3.settle(a.out[0]);
     runBtn.disabled = false;
   }
 
   function run(){
     var a = ACTIONS[Number(sel.value)];
     reset();
+    g3.begin();
     runBtn.disabled = true;
     var step = reduced ? 0 : 420;
 
@@ -668,6 +1022,7 @@ a{color:inherit}
         c.el.className = "g on" + (skipped ? "" : pass ? " pass" : " hold");
         c.verdict.textContent = skipped ? "Not reached" : (pass ? "Pass" : "Hold");
         c.why.textContent = chk[1];
+        g3.hit(i, skipped ? "SKIP" : pass ? "PASS" : "HOLD");
       }, step * i));
     });
 
@@ -677,6 +1032,7 @@ a{color:inherit}
   runBtn.addEventListener("click", run);
   sel.addEventListener("change", function(){
     timers.forEach(clearTimeout); timers = [];
+    g3.reset();
     cells.forEach(function(c){ c.el.className = "g"; c.verdict.textContent = "—"; c.why.textContent = ""; });
     vwrap.textContent = "";
     var s = document.createElement("span");
@@ -691,6 +1047,11 @@ a{color:inherit}
     {
       name: "Multi-Agent Commerce OS",
       disc: "Multi-agent governance",
+      layers: [
+        ["proposes", "8 specialised agents", "read events, emit declared tool calls"],
+        ["decides", "permission → policy → risk → budget", "typed tools, configured limits"],
+        ["changes", "SQLite and an append-only audit trail", "reached only after all four verdicts"]
+      ],
       stack: "TypeScript · Next.js · SQLite",
       metric: "8 agents",
       metricLabel: "zero db access",
@@ -711,6 +1072,11 @@ a{color:inherit}
     {
       name: "Payment Failure Recovery Engine",
       disc: "Payments decisioning",
+      layers: [
+        ["proposes", "one of five fixed actions", "hard declines never reach a model"],
+        ["decides", "twelve deterministic rules", "the only thing that can authorise money"],
+        ["changes", "UPI Autopay, links, timed retries", "inside RBI e-mandate limits"]
+      ],
       stack: "Python · XGBoost · Razorpay",
       metric: "₹11.71L / ₹1Cr",
       metricLabel: "vs. fixed retries",
@@ -732,6 +1098,11 @@ a{color:inherit}
     {
       name: "ave — editing intelligence",
       disc: "Media tooling",
+      layers: [
+        ["proposes", "selections and labels", "the model never emits a frame number"],
+        ["decides", "deterministic Python", "every cut answers with a rule id and its inputs"],
+        ["changes", "an FCPXML timeline in Resolve", "166 tests, none networked"]
+      ],
       stack: "Python · FFmpeg · DaVinci Resolve",
       metric: "166 tests",
       metricLabel: "none networked",
@@ -753,6 +1124,11 @@ a{color:inherit}
     {
       name: "Face Verify Chain",
       disc: "Applied cryptography",
+      layers: [
+        ["proposes", "a YuNet + SFace embedding", "plus the reverse-image search response"],
+        ["decides", "the contract recomputes similarity", "and reverts below the threshold"],
+        ["changes", "burn-tx calldata, chain re-derived", "verified at 0.8308"]
+      ],
       stack: "Python · OpenCV · Solidity",
       metric: "on-chain",
       metricLabel: "similarity recomputed",
@@ -774,6 +1150,11 @@ a{color:inherit}
     {
       name: "Mic RAG",
       disc: "Retrieval benchmarking",
+      layers: [
+        ["proposes", "multilingual-e5-small, 384-d", "or a stdlib fallback with no downloads"],
+        ["decides", "one make target per number", "a figure you can’t re-derive isn’t a result"],
+        ["changes", "reports stamped with their embedder", "chunking, recall, HNSW latency"]
+      ],
       stack: "Python · sentence-transformers · FAISS",
       metric: "1 make target",
       metricLabel: "per published number",
@@ -794,6 +1175,11 @@ a{color:inherit}
     {
       name: "Hacker House Goa — Builder Passport",
       disc: "Front-end product",
+      layers: [
+        ["proposes", "card state in React 19", "Next.js 16, App Router"],
+        ["decides", "it has to build on a machine that isn’t yours", "before the deadline, not after"],
+        ["changes", "Satori OG images, PNG export, Vercel", "live"]
+      ],
       stack: "Next.js 16 · React 19 · Vercel",
       metric: "shipped",
       metricLabel: "live on vercel",
@@ -846,6 +1232,33 @@ a{color:inherit}
     d.appendChild(s);
 
     var body = document.createElement("div"); body.className = "body";
+
+    /* the exploded view of that project's own constraint */
+    var stack = document.createElement("div");
+    stack.className = "stack";
+    stack.setAttribute("aria-hidden", "true");
+    var view = document.createElement("div"); view.className = "stack-view";
+    var sa = document.createElement("span"); sa.className = "spine a";
+    var sb = document.createElement("span"); sb.className = "spine b";
+    var stage = document.createElement("div"); stage.className = "stack-stage";
+    (w.layers || []).forEach(function(L){
+      var slab = document.createElement("div"); slab.className = "slab";
+      var em = document.createElement("em"); em.textContent = L[0];
+      var nm = document.createElement("b"); nm.textContent = L[1];
+      var nt = document.createElement("span"); nt.textContent = L[2];
+      slab.appendChild(em); slab.appendChild(nm); slab.appendChild(nt);
+      stage.appendChild(slab);
+    });
+    view.appendChild(sa); view.appendChild(sb); view.appendChild(stage);
+    stack.appendChild(view);
+    if (!reduced && w.layers){
+      stack.addEventListener("pointermove", function(e){
+        var r = stack.getBoundingClientRect();
+        stage.style.setProperty("--turn", (((e.clientX - r.left) / r.width - 0.5) * 9).toFixed(2) + "deg");
+      });
+      stack.addEventListener("pointerleave", function(){ stage.style.setProperty("--turn", "0deg"); });
+    }
+    body.appendChild(stack);
 
     var left = document.createElement("div");
     var con = document.createElement("p"); con.className = "constraint"; con.textContent = w.constraint;
