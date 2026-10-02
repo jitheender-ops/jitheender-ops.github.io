@@ -65,6 +65,14 @@ a{color:inherit}
   font-size:clamp(3.2rem,15.5vw,13.5rem);
   line-height:.82;letter-spacing:-.025em;margin:0;
   text-wrap:balance;
+  transform:translate3d(var(--px,0px),var(--py,0px),0) skewY(var(--vsk,0deg));
+  transition:transform .4s cubic-bezier(.2,.7,.3,1);
+  /* a lift off the page: paper gap, grey slab, then the blue plate missed to one side */
+  text-shadow:
+    calc(var(--ex,0)*1px) calc(var(--ex,0)*1px) 0 var(--paper),
+    calc(var(--ex,0)*2px) calc(var(--ex,0)*2px) 0 var(--rule),
+    calc(var(--ex,0)*3px) calc(var(--ex,0)*3px) 0 var(--rule),
+    calc(var(--ex,0)*3.6px) calc(var(--ex,0)*3.6px) 0 var(--blue);
 }
 .hero h1 .given{display:block}
 .hero h1 .family{display:block;font-style:italic;margin-left:.06em}
@@ -72,12 +80,22 @@ a{color:inherit}
 
 .hero-top{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end}
 .hero-top h1{position:relative;z-index:1;margin-right:-8%}
-.portrait{
+.portrait-scene{
   position:relative;z-index:2;justify-self:end;align-self:end;
-  width:clamp(210px,29vw,420px);height:auto;
+  width:clamp(210px,29vw,420px);
   margin-bottom:-1.5%;
-  mix-blend-mode:multiply;
-  pointer-events:none;user-select:none;
+  transform:translate3d(var(--px,0px),var(--py,0px),0);
+  transition:transform .4s cubic-bezier(.2,.7,.3,1);
+  animation:portrait-in .9s cubic-bezier(.16,.68,.22,1) .15s backwards;
+}
+@keyframes portrait-in{from{opacity:0;transform:translate3d(0,30px,0)}}
+.portrait-scene .portrait{
+  display:block;width:100%;height:auto;
+  mix-blend-mode:multiply;pointer-events:none;user-select:none;
+}
+.portrait-scene canvas{
+  position:absolute;inset:0;width:100%;height:100%;
+  mix-blend-mode:multiply;pointer-events:none;
 }
 
 .thesis{
@@ -354,6 +372,35 @@ a{color:inherit}
   .i-metric{text-align:left}
   .dock a{padding:8px 9px;font-size:10.5px}
 }
+
+/* ══ cinematic depth layer ═══════════════════════════════
+   sections arrive from depth like a dolly move; titles shear
+   with scroll velocity; controls lean toward the hand. */
+.rv{
+  transform:perspective(900px) translate3d(0,30px,-46px) rotateX(5deg);
+  opacity:0;transform-origin:50% 100%;
+}
+.rv.on{
+  opacity:1;transform:none;
+  transition:opacity .85s cubic-bezier(.16,.68,.22,1) var(--d,0s),
+             transform .85s cubic-bezier(.16,.68,.22,1) var(--d,0s);
+}
+.sec-head h2,.about h2{transform:skewY(var(--vsk,0deg));will-change:transform}
+.mag{transition:transform .3s cubic-bezier(.2,.7,.3,1.6),background-color .16s ease,color .16s ease,border-color .16s ease}
+
+html.xcur-on,html.xcur-on *{cursor:none!important}
+.xcur{
+  position:fixed;left:0;top:0;z-index:2147483000;pointer-events:none;
+  width:34px;height:34px;margin:-17px 0 0 -17px;border:1.5px solid var(--ink);border-radius:50%;
+  opacity:0;
+  transition:width .18s ease,height .18s ease,margin .18s ease,border-color .18s ease,opacity .25s ease;
+  will-change:transform;
+}
+.xcur.live{opacity:.9}
+.xcur i{position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:var(--blue)}
+.xcur.hot{width:54px;height:54px;margin:-27px 0 0 -27px;border-color:var(--blue);opacity:1}
+.xcur.down{width:22px;height:22px;margin:-11px 0 0 -11px}
+.ink-off canvas{display:none}
 </style>
 
 </head>
@@ -372,8 +419,11 @@ a{color:inherit}
       <span class="given">Jitheender</span>
       <span class="family">Kumar<span class="dot">.</span></span>
     </h1>
-    <img class="portrait" src="portrait.png" width="980" height="1200"
-         alt="Manapuram Jitheender Kumar, printed as a two-colour halftone.">
+    <div class="portrait-scene">
+      <img class="portrait" src="portrait.png" width="980" height="1200"
+           alt="Manapuram Jitheender Kumar, printed as a two-colour halftone.">
+      <canvas id="inkdots" aria-hidden="true"></canvas>
+    </div>
   </div>
 
   <div class="thesis">
@@ -1327,6 +1377,237 @@ a{color:inherit}
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll);
   window.addEventListener("load", mark);
+
+  /* ─── cinematic depth layer ───────────────────────
+     three instruments: a scroll camera (dolly-in reveals,
+     velocity shear on titles), a magnetic hand on controls,
+     and the living halftone. All paused or flattened when
+     the visitor asks for reduced motion. */
+  var vh = window.innerHeight;
+
+  /* camera: sections arrive from depth once, staggered */
+  var RVS = ".sec-head,.gate-top,.stage,.gates,.verdict,.item,.stack-view," +
+            ".thesis,.ticker,.about-grid,.kit div,.creds section,.foot-mark,.foot-grid";
+  var rvs = Array.prototype.slice.call(document.querySelectorAll(RVS));
+  var rvQ = [];
+  rvs.forEach(function(el, i){
+    el.classList.add("rv");
+    el.style.setProperty("--d", ((i % 4) * 0.07).toFixed(2) + "s");
+    rvQ.push(el);
+  });
+  if ("IntersectionObserver" in window){
+    var rio = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (!e.isIntersecting) return;
+        e.target.classList.add("on");
+        rio.unobserve(e.target);
+      });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0 });
+    rvQ.forEach(function(el){ rio.observe(el); });
+  } else {
+    rvQ.forEach(function(el){ el.classList.add("on"); });
+  }
+
+  /* velocity shear + hero drift: rAF-throttled scroll readback */
+  var sQ = false, lastY = window.pageYOffset, lastT = 0, vsk = 0;
+  var h1 = document.querySelector(".hero h1");
+  var psc = document.querySelector(".portrait-scene");
+  var h2s = Array.prototype.slice.call(document.querySelectorAll(".sec-head h2,.about h2"));
+  window.addEventListener("resize", function(){ vh = window.innerHeight; });
+  function frame(t){
+    var y = window.pageYOffset;
+    var dt = Math.max(16, t - lastT); lastT = t;
+    var v = (y - lastY) / dt;          // px per ms, signed
+    lastY = y;
+    var target = Math.max(-4, Math.min(4, v * 260));
+    vsk += (target - vsk) * 0.12;      // ease toward scroll velocity
+    if (Math.abs(vsk) < 0.04) vsk = 0;
+    if (h1) h1.style.setProperty("--vsk", vsk.toFixed(3) + "deg");
+    for (var hi = 0; hi < h2s.length; hi++) h2s[hi].style.setProperty("--vsk", (vsk * 0.6).toFixed(3) + "deg");
+
+    /* hero elements part as you leave it — a slow dolly past them */
+    if (psc && y < vh * 1.2){
+      var d = Math.min(1, y / (vh * 0.9));
+      psc.style.setProperty("--px", (d * -44).toFixed(1) + "px");
+      psc.style.setProperty("--py", (d * 18).toFixed(1) + "px");
+      if (h1){
+        h1.style.setProperty("--px", (d * 12).toFixed(1) + "px");
+        h1.style.setProperty("--py", (d * -8).toFixed(1) + "px");
+      }
+    }
+  }
+  if (!reduced){
+    (function loop(t){ frame(t || 0); requestAnimationFrame(loop); })(0);
+  }
+
+  /* magnetic controls: the button leans toward the hand before it is pressed */
+  function magnetize(el, pull){
+    if (reduced) return;
+    el.classList.add("mag");
+    el.addEventListener("pointermove", function(e){
+      var r = el.getBoundingClientRect();
+      var dx = (e.clientX - r.left) / r.width - 0.5;
+      var dy = (e.clientY - r.top) / r.height - 0.5;
+      el.style.transform = "translate(" + (dx * pull).toFixed(1) + "px," + (dy * pull).toFixed(1) + "px)";
+    });
+    el.addEventListener("pointerleave", function(){ el.style.transform = ""; });
+  }
+  document.querySelectorAll(".dock a,.repo,.run,.foot-grid a").forEach(function(a){ magnetize(a, 5); });
+
+  /* the ink cursor: a registration ring chasing the pen nib */
+  if (!reduced && window.matchMedia("(pointer:fine)").matches){
+    var cur = document.createElement("div");
+    cur.className = "xcur";
+    cur.innerHTML = "<i></i>";
+    cur.setAttribute("aria-hidden", "true");
+    document.body.appendChild(cur);
+    document.documentElement.classList.add("xcur-on");
+    var cx = -100, cy = -100, rx = -100, ry = -100, live = false;
+    document.addEventListener("pointermove", function(e){
+      cx = e.clientX; cy = e.clientY;
+      if (!live){ live = true; rx = cx; ry = cy; cur.classList.add("live"); }
+      var t = e.target;
+      var hot = !!(t && t.closest && t.closest("a,button,select,summary,.ticker"));
+      cur.classList.toggle("hot", hot);
+    }, { passive: true });
+    document.addEventListener("pointerdown", function(){ cur.classList.add("down"); });
+    document.addEventListener("pointerup", function(){ cur.classList.remove("down"); });
+    document.addEventListener("pointerleave", function(){ live = false; cur.classList.remove("live"); });
+    (function chase(){
+      rx += (cx - rx) * 0.18; ry += (cy - ry) * 0.18;
+      cur.style.transform = "translate(" + rx.toFixed(1) + "px," + ry.toFixed(1) + "px)";
+      requestAnimationFrame(chase);
+    })();
+  }
+
+  /* ─── the living halftone ─────────────────────────
+     the hero portrait is re-set as live ink: a coarse dot
+     screen sampled from the drawing, overprinted in the two
+     press inks with a misregistration offset. Dots breathe
+     on a slow press rhythm and the cursor works the paper
+     like a roller — ink scatters and re-settles. The <img>
+     stays underneath; if canvas or sampling fails the scene
+     is simply the print it always was. */
+  (function inkHalftone(){
+    var img = document.querySelector(".portrait-scene .portrait");
+    var cv = document.getElementById("inkdots");
+    var scene = document.querySelector(".portrait-scene");
+    if (!img || !cv || reduced || !scene) return;
+    if (img.complete === false){
+      img.addEventListener("load", inkHalftone, { once: true });
+      return;
+    }
+    try {
+      var smp = document.createElement("canvas");
+      var SW = 150, SH = Math.round(150 * img.naturalHeight / img.naturalWidth);
+      smp.width = SW; smp.height = SH;
+      var sctx = smp.getContext("2d", { willReadFrequently: true });
+      if (!sctx) return;
+      sctx.drawImage(img, 0, 0, SW, SH);
+      var data = sctx.getImageData(0, 0, SW, SH).data;
+
+      var ctx = cv.getContext("2d");
+      if (!ctx) return;
+      var W = 0, H = 0, DPR = Math.min(window.devicePixelRatio || 1, 1.6);
+      var DOT = 4.6;                     // screen pitch in CSS px
+      var dots = [];
+
+      function build(){
+        var r = scene.getBoundingClientRect();
+        W = Math.max(10, Math.round(r.width)); H = Math.max(10, Math.round(r.height));
+        cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        dots.length = 0;
+        var cols = Math.floor(W / DOT), rows = Math.floor(H / DOT);
+        for (var j = 0; j < rows; j++){
+          for (var i = 0; i < cols; i++){
+            var sx = Math.min(SW - 1, Math.round((i + 0.5) / cols * SW));
+            var sy = Math.min(SH - 1, Math.round((j + 0.5) / rows * SH));
+            var k = (sy * SW + sx) * 4;
+            var lum = (0.2126 * data[k] + 0.7152 * data[k + 1] + 0.0722 * data[k + 2]) / 255;
+            if (lum > 0.86) continue;            // paper stays paper
+            var phase = (i * 0.7 + j * 1.3) % 6.283;
+            dots.push({ x: (i + 0.5) * DOT, y: (j + 0.5) * DOT, l: lum,
+                        ox: 0, oy: 0, vx: 0, vy: 0, ph: phase });
+          }
+        }
+      }
+
+      var px = -1e4, py = -1e4, over = false, t0 = 0, raf = 0, running = false;
+      var BLUE = "rgba(11,76,224,0.55)", BLACK = "rgba(12,13,11,0.82)";
+
+      function draw(t){
+        if (!running) return;
+        if (!t0) t0 = t;
+        var s = (t - t0) / 1000;
+        var scrollLift = Math.max(0, Math.min(1, (window.pageYOffset) / (vh * 0.9)));
+        var alpha = 1 - scrollLift * 0.85;   // the ink settles back into the print as you leave
+        ctx.clearRect(0, 0, W, H);
+        ctx.globalAlpha = alpha;
+        var R2 = 84 * 84;
+        for (var n = 0; n < dots.length; n++){
+          var d = dots[n];
+          var dx = d.x + d.ox - px, dy = d.y + d.oy - py;
+          var m2 = dx * dx + dy * dy;
+          if (over && m2 < R2){
+            var m = Math.sqrt(m2) || 1, f = (84 - m) / 84;
+            d.vx += (dx / m) * f * 2.6 + (Math.random() - 0.5) * 0.55;
+            d.vy += (dy / m) * f * 2.6 + (Math.random() - 0.5) * 0.55;
+          }
+          d.vx *= 0.86; d.vy *= 0.86;
+          d.ox = (d.ox + d.vx) * 0.96; d.oy = (d.oy + d.vy) * 0.96;
+          var br = 1 + 0.14 * Math.sin(s * 1.4 + d.ph);
+          var rad = (1 - d.l) * (DOT * 0.62) * br;
+          if (rad < 0.3) continue;
+          var X = d.x + d.ox, Y = d.y + d.oy;
+          if (d.l < 0.55){
+            ctx.fillStyle = BLUE;
+            ctx.beginPath(); ctx.arc(X - rad * 0.34, Y + rad * 0.26, rad * 0.72, 0, 6.283); ctx.fill();
+            ctx.fillStyle = BLACK;
+            ctx.beginPath(); ctx.arc(X, Y, rad * 0.8, 0, 6.283); ctx.fill();
+          } else {
+            ctx.fillStyle = BLACK;
+            ctx.beginPath(); ctx.arc(X, Y, rad * 0.55, 0, 6.283); ctx.fill();
+          }
+        }
+        ctx.globalAlpha = 1;
+        raf = requestAnimationFrame(draw);
+      }
+
+      function wake(){
+        if (running) return;
+        running = true; t0 = 0;
+        raf = requestAnimationFrame(draw);
+      }
+      function sleep(){
+        running = false;
+        cancelAnimationFrame(raf);
+      }
+      scene.addEventListener("pointermove", function(e){
+        var r = scene.getBoundingClientRect();
+        px = e.clientX - r.left; py = e.clientY - r.top;
+        over = true; wake();
+      }, { passive: true });
+      scene.addEventListener("pointerleave", function(){ over = false; px = -1e4; py = -1e4; });
+      var vio = null, lastVisible = true;
+      if ("IntersectionObserver" in window){
+        vio = new IntersectionObserver(function(es){
+          es.forEach(function(e){ lastVisible = e.isIntersecting; e.isIntersecting ? wake() : sleep(); });
+        }, { threshold: 0 });
+        vio.observe(scene);
+      } else wake();
+      document.addEventListener("visibilitychange", function(){
+        if (document.hidden) sleep(); else if (!vio || lastVisible) wake();
+      });
+      if ("ResizeObserver" in window){
+        new ResizeObserver(function(){ build(); }).observe(scene);
+      } else {
+        window.addEventListener("resize", build);
+      }
+      build();
+      wake();
+    } catch (err) { /* keep the plain print */ }
+  })();
 
   /* ─── the gate demonstrates itself the first time it is seen ─── */
   if ("IntersectionObserver" in window) {
