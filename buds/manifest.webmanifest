@@ -1,0 +1,10 @@
+{
+  "name": "Buds Air 7 Pro Control",
+  "short_name": "Buds Control",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#141412",
+  "theme_color": "#141412",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
