@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Buds Air 7 Pro Control</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single-column phone console — status card, control pads, then advanced tools in tabs */
+:root{
+  --bg:#f3f2ee; --surface:#ffffff; --line:#dcdad2; --fg:#1d1c19; --muted:#6b6960;
+  --accent:#e0a100; --accent-ink:#1d1c19; --good:#2f8a4e; --bad:#c2412d;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141412; --surface:#1e1d1a; --line:#34322d; --fg:#eeece6; --muted:#9a978c;
+  --accent:#f2bc2a; --accent-ink:#141412; --good:#5cc27f; --bad:#ef7660; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141412; --surface:#1e1d1a; --line:#34322d; --fg:#eeece6; --muted:#9a978c;
+  --accent:#f2bc2a; --accent-ink:#141412; --good:#5cc27f; --bad:#ef7660; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--body);font-size:15px;line-height:1.5;margin:0;padding:20px 16px 48px}
+main{max-width:560px;margin:0 auto;display:grid;gap:18px}
+h1{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0}
+.eyebrow{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:inherit;font-weight:500;border:1px solid var(--line);background:var(--surface);color:var(--fg);
+  border-radius:10px;padding:10px 14px;cursor:pointer;min-height:44px}
+button:hover{border-color:var(--fg)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.small{min-height:32px;padding:4px 10px;font-size:.85rem}
+input,select,textarea{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+textarea,input.mono,.mono{font-family:var(--mono);font-size:.82rem}
+label{display:grid;gap:4px;font-size:.85rem;color:var(--muted)}
+.status{display:flex;align-items:center;gap:10px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex:none}
+.dot.ok{background:var(--good)} .dot.err{background:var(--bad)}
+.batt{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.batt div{border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.batt b{display:block;font-family:var(--display);font-size:1.5rem;font-variant-numeric:tabular-nums}
+.pads{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pads button{display:grid;gap:2px;justify-items:center;padding:10px 6px}
+.pads small{font-size:.7rem;color:var(--muted);font-family:var(--mono)}
+.pads button.on small{color:var(--bg)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tabs button{border:none;border-bottom:2px solid transparent;border-radius:0;background:none;color:var(--muted)}
+.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.log{font-family:var(--mono);font-size:.78rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+  padding:8px;height:200px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+.log .tx{color:var(--accent)} .log .rx{color:var(--good)} .log .er{color:var(--bad)}
+.svc{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:6px;min-width:0}
+.chr{display:grid;gap:6px;padding:8px;border:1px dashed var(--line);border-radius:8px;min-width:0}
+.uuid{font-family:var(--mono);font-size:.76rem;word-break:break-all}
+.map{display:grid;gap:8px}
+.map .row > *{flex:1 1 140px}
+.note{font-size:.85rem;border-left:3px solid var(--accent);padding-left:10px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<main>
+  <header style="display:grid;gap:6px">
+    <span class="eyebrow">realme Buds Air 7 Pro · Web Bluetooth</span>
+    <h1>Buds Air 7 Pro Control</h1>
+    <p class="muted" style="margin:0">Battery, device info and noise-control shortcuts from Chrome. Open in Chrome on Android, Windows, macOS or ChromeOS.</p>
+  </header>
+
+  <section class="card" aria-label="Connection">
+    <div class="status"><span class="dot" id="dot"></span><strong id="stateText">Not connected</strong></div>
+    <div class="muted" id="devInfo">Take the buds out of the case first so they're advertising.</div>
+    <div class="row">
+      <button class="primary" id="btnConnect">Connect buds</button>
+      <button id="btnDisconnect" disabled>Disconnect</button>
+    </div>
+    <div class="batt" aria-label="Battery">
+      <div><span class="eyebrow">Battery</span><b id="battMain">—</b></div>
+      <div><span class="eyebrow">Model</span><b id="model" style="font-size:.95rem">—</b></div>
+      <div><span class="eyebrow">Firmware</span><b id="fw" style="font-size:.95rem">—</b></div>
+    </div>
+    <p class="note" id="supportNote" hidden></p>
+  </section>
+
+  <section class="card" aria-label="Controls">
+    <h2>Noise control</h2>
+    <div class="pads" id="padsAnc"></div>
+    <h2>Sound</h2>
+    <div class="pads" id="padsSound"></div>
+    <p class="note">Each button sends the bytes you mapped to it in <b>Command map</b> below. Buttons marked “not mapped” do nothing until you add the bytes captured from the official app.</p>
+  </section>
+
+  <section class="card" aria-label="Advanced">
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="map">Command map</button>
+      <button role="tab" aria-selected="false" data-tab="explore">GATT explorer</button>
+      <button role="tab" aria-selected="false" data-tab="spp">SPP serial</button>
+      <button role="tab" aria-selected="false" data-tab="help">How to</button>
+    </div>
+
+    <div data-panel="map" class="map">
+      <label>Write characteristic UUID (used by all mapped commands over BLE)
+        <input class="mono" id="writeChar" placeholder="e.g. 0000xxxx-0000-1000-8000-00805f9b34fb">
+      </label>
+      <label>Notify characteristic UUID (responses)
+        <input class="mono" id="notifyChar" placeholder="optional">
+      </label>
+      <label>Transport
+        <select id="transport"><option value="ble">BLE (Web Bluetooth)</option><option value="spp">SPP (Web Serial)</option></select>
+      </label>
+      <div id="mapRows" class="map"></div>
+      <div class="row"><button id="btnSaveMap" class="primary">Save map</button><button id="btnExport">Copy map JSON</button><button id="btnImport">Import JSON</button></div>
+      <textarea id="importBox" rows="4" hidden placeholder="Paste map JSON, then press Import JSON again"></textarea>
+    </div>
+
+    <div data-panel="explore" hidden>
+      <label>Extra service UUIDs to request (comma separated). Web Bluetooth only shows services you list here.
+        <input class="mono" id="extraSvcs" placeholder="0000xxxx-..., 0xfe2c">
+      </label>
+      <p class="muted" style="margin:6px 0 0">Reconnect after changing this list.</p>
+      <div id="tree" style="display:grid;gap:10px;margin-top:10px"><p class="muted">Connect to list services and characteristics.</p></div>
+    </div>
+
+    <div data-panel="spp" hidden style="display:grid;gap:10px">
+      <p class="muted" style="margin:0">Many earbuds send settings over classic Bluetooth serial (SPP), which Web Bluetooth can't reach. Desktop Chrome can open a paired device's SPP channel through Web Serial.</p>
+      <div class="row"><button id="btnSpp">Open SPP port</button><button id="btnSppClose" disabled>Close</button></div>
+      <div class="row"><input class="mono" id="sppHex" placeholder="hex bytes, e.g. AA 07 00 ..." style="flex:1 1 200px"><button id="btnSppSend" disabled>Send</button></div>
+    </div>
+
+    <div data-panel="help" hidden style="display:grid;gap:8px">
+      <p style="margin:0"><b>Why commands need mapping.</b> realme hasn't published the buds' control protocol, so ANC, EQ and gesture commands are vendor bytes. Battery, model and firmware use standard Bluetooth services and work right away if the buds expose them.</p>
+      <p style="margin:0"><b>Capture the bytes on Android:</b></p>
+      <ol style="margin:0;padding-left:20px;display:grid;gap:4px">
+        <li>Developer options → turn on <i>Enable Bluetooth HCI snoop log</i>, then toggle Bluetooth off and on.</li>
+        <li>In the realme Link app, tap one setting at a time (e.g. ANC on, then off) and note the time.</li>
+        <li>Run <span class="mono">adb bugreport</span>, open <span class="mono">btsnoop_hci.log</span> in Wireshark.</li>
+        <li>Filter <span class="mono">btatt.opcode == 0x52 || btatt.opcode == 0x12</span> for BLE writes, or <span class="mono">btrfcomm</span> for SPP.</li>
+        <li>Copy the characteristic UUID and payload hex into the Command map.</li>
+      </ol>
+      <p style="margin:0"><b>Hosting.</b> Web Bluetooth needs HTTPS. Put this file on GitHub Pages and open it in Chrome. iPhone browsers don't support Web Bluetooth.</p>
+    </div>
+
+    <div style="display:grid;gap:6px">
+      <div class="row" style="justify-content:space-between"><span class="eyebrow">Log</span><button class="small" id="btnClear">Clear</button></div>
+      <div class="log" id="log" aria-live="polite"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const STORE = 'buds-air7pro-map-v1';
+const COMMANDS = [
+  {id:'anc_on', group:'Anc', label:'ANC', },
+  {id:'transparency', group:'Anc', label:'Transparency'},
+  {id:'anc_off', group:'Anc', label:'Off'},
+  {id:'eq_balanced', group:'Sound', label:'Balanced'},
+  {id:'eq_bass', group:'Sound', label:'Bass boost'},
+  {id:'eq_bright', group:'Sound', label:'Bright'},
+  {id:'game_on', group:'Sound', label:'Game mode'},
+  {id:'game_off', group:'Sound', label:'Game off'},
+  {id:'find', group:'Sound', label:'Find buds'},
+];
+const STD = {battery:0x180f, battLevel:0x2a19, devInfo:0x180a, model:0x2a24, fw:0x2a26, mfr:0x2a29};
+
+let device, server, writeCh, notifyCh, port, reader, writer;
+let map = load();
+
+function load(){
+  try{ return JSON.parse(localStorage.getItem(STORE)) || {cmds:{}, writeChar:'', notifyChar:'', transport:'ble', extra:''}; }
+  catch(e){ return {cmds:{}, writeChar:'', notifyChar:'', transport:'ble', extra:''}; }
+}
+function persist(){ try{ localStorage.setItem(STORE, JSON.stringify(map)); }catch(e){} }
+
+function log(msg, cls=''){
+  const el = $('#log'); const line = document.createElement('div');
+  const t = new Date().toLocaleTimeString([], {hour12:false});
+  line.className = cls; line.textContent = `${t}  ${msg}`; el.appendChild(line); el.scrollTop = el.scrollHeight;
+}
+const toHex = buf => [...new Uint8Array(buf.buffer || buf)].map(b=>b.toString(16).padStart(2,'0').toUpperCase()).join(' ');
+function fromHex(s){
+  const clean = s.replace(/0x/gi,'').replace(/[^0-9a-f]/gi,'');
+  if(!clean || clean.length % 2) throw new Error('Hex needs an even number of digits');
+  return new Uint8Array(clean.match(/../g).map(h=>parseInt(h,16)));
+}
+function normUuid(u){
+  u = u.trim().toLowerCase(); if(!u) return null;
+  if(/^0x[0-9a-f]{1,4}$/.test(u)) return parseInt(u,16);
+  if(/^[0-9a-f]{4}$/.test(u)) return parseInt(u,16);
+  return u;
+}
+function setState(text, kind){ $('#stateText').textContent = text; $('#dot').className = 'dot ' + (kind||''); }
+
+/* ---------- UI build ---------- */
+function buildPads(){
+  for(const g of ['Anc','Sound']){
+    const wrap = $('#pads'+g); wrap.innerHTML='';
+    COMMANDS.filter(c=>c.group===g).forEach(c=>{
+      const b = document.createElement('button'); b.id = 'pad_'+c.id;
+      const mapped = !!(map.cmds[c.id]||'').trim();
+      b.innerHTML = `<span>${c.label}</span><small>${mapped ? 'mapped' : 'not mapped'}</small>`;
+      b.onclick = () => sendCommand(c);
+      wrap.appendChild(b);
+    });
+  }
+}
+function buildMap(){
+  $('#writeChar').value = map.writeChar||''; $('#notifyChar').value = map.notifyChar||'';
+  $('#transport').value = map.transport||'ble'; $('#extraSvcs').value = map.extra||'';
+  const rows = $('#mapRows'); rows.innerHTML='';
+  COMMANDS.forEach(c=>{
+    const l = document.createElement('label'); l.textContent = c.label + ' (hex)';
+    const i = document.createElement('input'); i.className='mono'; i.id='map_'+c.id; i.value = map.cmds[c.id]||''; i.placeholder='paste captured bytes';
+    l.appendChild(i); rows.appendChild(l);
+  });
+}
+function readMapForm(){
+  map.writeChar = $('#writeChar').value.trim(); map.notifyChar = $('#notifyChar').value.trim();
+  map.transport = $('#transport').value; map.extra = $('#extraSvcs').value.trim();
+  COMMANDS.forEach(c=> map.cmds[c.id] = $('#map_'+c.id).value.trim());
+}
+
+document.querySelectorAll('[role=tab]').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('[role=tab]').forEach(x=>x.setAttribute('aria-selected', x===t));
+  document.querySelectorAll('[data-panel]').forEach(p=>p.hidden = p.dataset.panel!==t.dataset.tab);
+});
+
+$('#btnSaveMap').onclick = async ()=>{
+  readMapForm(); persist(); buildPads(); log('Command map saved');
+  if(server?.connected) await bindChars();
+};
+$('#btnExport').onclick = async ()=>{
+  readMapForm(); const txt = JSON.stringify(map,null,1);
+  try{ await navigator.clipboard.writeText(txt); log('Map JSON copied'); }
+  catch(e){ const box=$('#importBox'); box.hidden=false; box.value=txt; box.select(); log('Clipboard blocked — JSON shown in the box, copy it manually'); }
+};
+$('#btnImport').onclick = ()=>{
+  const box=$('#importBox');
+  if(box.hidden || !box.value.trim()){ box.hidden=false; box.value=''; box.focus(); return; }
+  try{ map = Object.assign(load(), JSON.parse(box.value)); persist(); buildMap(); buildPads(); box.hidden=true; log('Map imported'); }
+  catch(e){ log('Import failed: '+e.message,'er'); }
+};
+$('#btnClear').onclick = ()=> $('#log').innerHTML='';
+
+/* ---------- Support check ---------- */
+(function(){
+  const n=$('#supportNote');
+  if(!('bluetooth' in navigator)){
+    n.hidden=false;
+    n.textContent = window.isSecureContext
+      ? 'This browser has no Web Bluetooth. Use Chrome on Android or desktop (not iPhone).'
+      : 'Web Bluetooth needs HTTPS. Host this page (GitHub Pages works) and open it in Chrome.';
+    $('#btnConnect').disabled = true;
+  }
+  if(!('serial' in navigator)) $('#btnSpp').disabled = true;
+})();
+
+/* ---------- BLE ---------- */
+$('#btnConnect').onclick = async ()=>{
+  readMapForm(); persist();
+  const extra = (map.extra||'').split(',').map(normUuid).filter(Boolean);
+  try{
+    setState('Choosing device…');
+    device = await navigator.bluetooth.requestDevice({
+      acceptAllDevices:true,
+      optionalServices:[STD.battery, STD.devInfo, 0xfe2c, ...extra]
+    });
+    device.addEventListener('gattserverdisconnected', onDisconnected);
+    setState('Connecting to '+(device.name||'device')+'…');
+    server = await device.gatt.connect();
+    setState('Connected', 'ok');
+    $('#devInfo').textContent = device.name || 'Unnamed device';
+    $('#btnDisconnect').disabled=false;
+    log('Connected to '+(device.name||device.id),'rx');
+    await readStandard();
+    await explore();
+    await bindChars();
+  }catch(e){
+    setState(e.name==='NotFoundError' ? 'Not connected' : 'Connection failed', e.name==='NotFoundError'?'':'err');
+    if(e.name!=='NotFoundError') log(e.message,'er');
+  }
+};
+$('#btnDisconnect').onclick = ()=> device?.gatt?.connected && device.gatt.disconnect();
+function onDisconnected(){
+  setState('Disconnected'); $('#btnDisconnect').disabled=true; writeCh=notifyCh=null; log('Disconnected','er');
+}
+
+async function readStandard(){
+  try{
+    const s = await server.getPrimaryService(STD.battery);
+    const c = await s.getCharacteristic(STD.battLevel);
+    const show = v => $('#battMain').textContent = v.getUint8(0)+'%';
+    show(await c.readValue());
+    try{ await c.startNotifications(); c.addEventListener('characteristicvaluechanged', e=>show(e.target.value)); }catch(e){}
+  }catch(e){ log('No standard battery service exposed'); }
+  try{
+    const s = await server.getPrimaryService(STD.devInfo); const dec = new TextDecoder();
+    for(const [key,id] of [['model',STD.model],['fw',STD.fw]]){
+      try{ const v = await (await s.getCharacteristic(id)).readValue(); $('#'+key).textContent = dec.decode(v).trim()||'—'; }catch(e){}
+    }
+  }catch(e){ log('No device-information service exposed'); }
+}
+
+async function explore(){
+  const tree = $('#tree'); tree.innerHTML='';
+  let services=[];
+  try{ services = await server.getPrimaryServices(); }catch(e){ tree.innerHTML='<p class="muted">No accessible services. Add vendor service UUIDs above and reconnect.</p>'; return; }
+  for(const s of services){
+    const box = document.createElement('div'); box.className='svc';
+    box.innerHTML = `<span class="eyebrow">Service</span><span class="uuid">${s.uuid}</span>`;
+    let chars=[]; try{ chars = await s.getCharacteristics(); }catch(e){}
+    for(const c of chars){
+      const p = c.properties; const props = Object.keys(Object.getPrototypeOf(p)).filter(k=>p[k]===true);
+      const ids = ['read','write','writeWithoutResponse','notify','indicate'].filter(k=>p[k]);
+      const el = document.createElement('div'); el.className='chr';
+      el.innerHTML = `<span class="uuid">${c.uuid}</span><span class="muted" style="font-size:.8rem">${ids.join(' · ')||props.join(' · ')}</span>`;
+      const row = document.createElement('div'); row.className='row';
+      if(p.read) row.append(btn('Read', async()=>{ const v=await c.readValue(); log(`R ${short(c.uuid)}  ${toHex(v)}`,'rx'); }));
+      if(p.notify||p.indicate) row.append(btn('Listen', async()=>{ await c.startNotifications(); c.addEventListener('characteristicvaluechanged', e=>log(`N ${short(c.uuid)}  ${toHex(e.target.value)}`,'rx')); log('Listening on '+short(c.uuid)); }));
+      if(p.write||p.writeWithoutResponse){
+        row.append(btn('Use for commands', ()=>{ $('#writeChar').value=c.uuid; readMapForm(); persist(); bindChars(); log('Write characteristic set'); }));
+        const inp=document.createElement('input'); inp.className='mono'; inp.placeholder='hex to write'; inp.style.flex='1 1 160px';
+        row.append(inp, btn('Write', async()=>{ const d=fromHex(inp.value); p.write ? await c.writeValueWithResponse(d) : await c.writeValueWithoutResponse(d); log(`W ${short(c.uuid)}  ${toHex(d)}`,'tx'); }));
+      }
+      if(p.notify||p.indicate) row.append(btn('Use for responses', ()=>{ $('#notifyChar').value=c.uuid; readMapForm(); persist(); bindChars(); }));
+      el.append(row); box.append(el);
+    }
+    tree.append(box);
+  }
+}
+const short = u => u.length>8 ? u.slice(4,8) : u;
+function btn(text, fn){ const b=document.createElement('button'); b.className='small'; b.textContent=text; b.onclick=async()=>{ try{ await fn(); }catch(e){ log(e.message,'er'); } }; return b; }
+
+async function findChar(uuid){
+  uuid = normUuid(uuid||''); if(!uuid || !server?.connected) return null;
+  for(const s of await server.getPrimaryServices()){
+    try{ return await s.getCharacteristic(uuid); }catch(e){}
+  }
+  return null;
+}
+async function bindChars(){
+  writeCh = await findChar(map.writeChar);
+  const n = await findChar(map.notifyChar);
+  if(n && n!==notifyCh){
+    notifyCh = n;
+    try{ await n.startNotifications(); n.addEventListener('characteristicvaluechanged', e=>log('← '+toHex(e.target.value),'rx')); }catch(e){ log('Could not listen: '+e.message,'er'); }
+  }
+  if(map.writeChar && !writeCh) log('Write characteristic not found on this device. Check the UUID or add its service in GATT explorer.','er');
+}
+
+/* ---------- Send ---------- */
+async function sendCommand(c){
+  const hex = (map.cmds[c.id]||'').trim();
+  if(!hex){ log(`“${c.label}” has no bytes yet. Add them in Command map.`,'er'); return; }
+  let data; try{ data = fromHex(hex); }catch(e){ log(c.label+': '+e.message,'er'); return; }
+  try{
+    if(map.transport==='spp'){
+      if(!writer) throw new Error('Open the SPP port first');
+      await writer.write(data);
+    }else{
+      if(!writeCh) throw new Error('Connect and set a write characteristic first');
+      writeCh.properties.write ? await writeCh.writeValueWithResponse(data) : await writeCh.writeValueWithoutResponse(data);
+    }
+    log(`→ ${c.label}  ${toHex(data)}`,'tx');
+    const grp = COMMANDS.filter(x=>x.group===c.group && (c.group==='Anc' || x.id.slice(0,3)===c.id.slice(0,3)));
+    grp.forEach(x=>$('#pad_'+x.id).classList.toggle('on', x.id===c.id && c.id!=='find'));
+  }catch(e){ log(c.label+' failed: '+e.message,'er'); }
+}
+
+/* ---------- SPP via Web Serial ---------- */
+const SPP = '00001101-0000-1000-8000-00805f9b34fb';
+$('#btnSpp').onclick = async ()=>{
+  try{
+    port = await navigator.serial.requestPort({allowedBluetoothServiceClassIds:[SPP], filters:[{bluetoothServiceClassId:SPP}]});
+    await port.open({baudRate:115200});
+    writer = port.writable.getWriter();
+    $('#btnSppSend').disabled=false; $('#btnSppClose').disabled=false;
+    log('SPP port open','rx'); readLoop();
+  }catch(e){ if(e.name!=='NotFoundError') log('SPP: '+e.message,'er'); }
+};
+async function readLoop(){
+  reader = port.readable.getReader();
+  try{ for(;;){ const {value,done} = await reader.read(); if(done) break; log('← '+toHex(value),'rx'); } }
+  catch(e){ log('SPP read stopped: '+e.message,'er'); }
+  finally{ reader.releaseLock(); }
+}
+$('#btnSppSend').onclick = async ()=>{ try{ const d=fromHex($('#sppHex').value); await writer.write(d); log('→ '+toHex(d),'tx'); }catch(e){ log(e.message,'er'); } };
+$('#btnSppClose').onclick = async ()=>{
+  try{ await reader?.cancel(); writer?.releaseLock(); await port?.close(); }catch(e){}
+  writer=null; $('#btnSppSend').disabled=true; $('#btnSppClose').disabled=true; log('SPP port closed');
+};
+
+buildMap(); buildPads();
+log('Ready. Tap “Connect buds”.');
+</script>
+</html>
